@@ -1,0 +1,158 @@
+# ==============================================================================
+#                 PRODUCTION-GRADE MERN AI SAAS PLATFORM .GITIGNORE
+# ==============================================================================
+# Covers: React.js (Vite), Node.js, Express.js, MongoDB, Tailwind, Gemini AI
+# Structure: Root, frontend/, backend/
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Dependency Directories
+# ------------------------------------------------------------------------------
+# Ignore all node_modules directories across root, frontend, and backend
+node_modules/
+jspm_packages/
+web_modules/
+.pnpm-store/
+
+# ------------------------------------------------------------------------------
+# 2. Environment Variables & Secrets (CRITICAL SECURITY)
+# ------------------------------------------------------------------------------
+# Never commit API keys (Gemini, etc.), MongoDB connection strings, or JWT secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+*.env.local
+.env.secret
+.env.shared
+
+# Specific subfolder env files as backup safety
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+backend/.env
+backend/.env.local
+backend/.env.development.local
+backend/.env.test.local
+backend/.env.production.local
+
+# Certificate and private keys
+*.pem
+*.key
+*.cert
+*.pfx
+*.crt
+*.csr
+*.der
+
+# ------------------------------------------------------------------------------
+# 3. Build & Distribution Directories
+# ------------------------------------------------------------------------------
+# Ignore compiled code, build logs, and bundling outputs
+dist/
+dist-ssr/
+build/
+out/
+.next/
+.serverless/
+bin/
+obj/
+frontend/dist/
+frontend/dist-ssr/
+backend/dist/
+
+# ------------------------------------------------------------------------------
+# 4. Logs and Diagnostic Reports
+# ------------------------------------------------------------------------------
+# Ignore execution logs, package manager debug logs, and application diagnostics
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# ------------------------------------------------------------------------------
+# 5. OS and System-Specific Files
+# ------------------------------------------------------------------------------
+# Ignore system-level files generated automatically by the operating system
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Dd]esktop.ini
+
+# ------------------------------------------------------------------------------
+# 6. IDE / Editor Configurations
+# ------------------------------------------------------------------------------
+# Ignore workspace-specific preferences and settings for editors
+# VS Code (except project recommended extensions/launch profiles if desired)
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/settings.json
+*.code-workspace
+.history/
+
+# JetBrains (WebStorm, IntelliJ IDEA, PyCharm, etc.)
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Other editors (Sublime Text, Vim, TextMate)
+*.sublime-project
+*.sublime-workspace
+*.sw?
+*.swo
+*~
+.#*
+\#*\#
+
+# ------------------------------------------------------------------------------
+# 7. Testing & Coverage
+# ------------------------------------------------------------------------------
+# Ignore testing artifacts and coverage reports
+coverage/
+.nyc_output/
+.jest/
+.vitest/
+.cypress/
+*.lcov
+
+# ------------------------------------------------------------------------------
+# 8. Temporary Uploads, Scratches & Caches
+# ------------------------------------------------------------------------------
+# Ignore user uploads in the backend (e.g. PDFs, images) but track the directory
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Local database dumps (MongoDB compass backups / mongodump)
+dump/
+*.dump
+*.sql
+*.sqlite
+
+# Caches
+.eslintcache
+.stylelintcache
+.sass-cache
+.parcel-cache
+.turbo/
+.vercel/
+.npm/
+.yarn/
+.vite/
+.cache/
