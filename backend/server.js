@@ -39,6 +39,9 @@ connectDB();
 
 const app = express();
 
+// Trust Railway proxy for secure headers and correct client IP resolution in rate limiting
+app.set('trust proxy', 1);
+
 /**
  * Global Optimization & Security Middleware
  */
@@ -92,23 +95,13 @@ app.use('/api/uploads', uploadRoutes);
 app.use('/api/audit-logs', auditLogRoutes);
 app.use('/api/users', userRoutes);
 
-// Serve built static assets in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/dist')));
-
-  app.use((req, res, next) => {
-    // Let API routes flow to their handlers
-    if (req.originalUrl.startsWith('/api')) {
-      return next();
-    }
-    res.sendFile(path.resolve(__dirname, '..', 'frontend', 'dist', 'index.html'));
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'BidSphere AI Backend Running'
   });
-} else {
-  // Root endpoint
-  app.get('/', (req, res) => {
-    res.send('API is running...');
-  });
-}
+});
 
 // Fallback 404 handler for unmatched routes
 app.use((req, res) => {
