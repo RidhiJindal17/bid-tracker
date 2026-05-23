@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   BarChart, 
@@ -145,8 +145,8 @@ const Analytics = () => {
     <PageTransition className="space-y-8 pb-12">
       {/* Top Banner Header */}
       <div>
-        <h1 className="text-3xl font-extrabold text-white tracking-tight">Team Productivity & Analytics</h1>
-        <p className="text-slate-400 text-sm mt-1">Audit sales velocity, pipeline efficiency scores, and individual contribution rates.</p>
+        <h1 className="text-3xl font-extrabold text-[#12213A] dark:text-white tracking-tight">Team Productivity & Analytics</h1>
+        <p className="text-[#5B6B8A] dark:text-slate-400 text-sm mt-1">Audit sales velocity, pipeline efficiency scores, and individual contribution rates.</p>
       </div>
 
       {/* Aggregate Overview Metrics */}
@@ -154,14 +154,14 @@ const Analytics = () => {
         <GlassCard className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Bids Won</span>
-              <h3 className="text-3xl font-bold text-white mt-1">{summary.totalCompleted}</h3>
+              <span className="text-xs font-bold uppercase tracking-wider text-[#5B6B8A] dark:text-slate-400">Total Bids Won</span>
+              <h3 className="text-3xl font-black text-[#12213A] dark:text-white mt-1">{summary.totalCompleted}</h3>
             </div>
-            <div className="p-3 bg-blue-500/10 rounded-xl text-blue-400">
+            <div className="p-3 bg-[#EAF1FF] dark:bg-blue-500/10 rounded-xl text-[#2447A5] dark:text-blue-400">
               <CheckSquare size={20} />
             </div>
           </div>
-          <div className="flex items-center gap-1 mt-4 text-xs text-emerald-400 font-medium">
+          <div className="flex items-center gap-1 mt-4 text-xs text-emerald-650 dark:text-emerald-400 font-bold">
             <TrendingUp size={12} />
             <span>+18.4% completed vs Q1</span>
           </div>
@@ -170,14 +170,14 @@ const Analytics = () => {
         <GlassCard className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Pipeline Revenue</span>
-              <h3 className="text-3xl font-bold text-white mt-1">${(summary.totalRevenue / 1000).toFixed(0)}k</h3>
+              <span className="text-xs font-bold uppercase tracking-wider text-[#5B6B8A] dark:text-slate-400">Pipeline Revenue</span>
+              <h3 className="text-3xl font-black text-[#12213A] dark:text-white mt-1">${(summary.totalRevenue / 1000).toFixed(0)}k</h3>
             </div>
-            <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-400">
+            <div className="p-3 bg-emerald-50 dark:bg-emerald-500/10 rounded-xl text-emerald-600 dark:text-emerald-400">
               <DollarSign size={20} />
             </div>
           </div>
-          <div className="flex items-center gap-1 mt-4 text-xs text-emerald-400 font-medium">
+          <div className="flex items-center gap-1 mt-4 text-xs text-emerald-600 dark:text-emerald-400 font-bold">
             <TrendingUp size={12} />
             <span>+12.6% revenue growth</span>
           </div>
@@ -186,14 +186,14 @@ const Analytics = () => {
         <GlassCard className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Avg Efficiency Index</span>
-              <h3 className="text-3xl font-bold text-white mt-1">{summary.averageEfficiency}%</h3>
+              <span className="text-xs font-bold uppercase tracking-wider text-[#5B6B8A] dark:text-slate-400">Avg Efficiency Index</span>
+              <h3 className="text-3xl font-black text-[#12213A] dark:text-white mt-1">{summary.averageEfficiency}%</h3>
             </div>
-            <div className="p-3 bg-purple-500/10 rounded-xl text-purple-400">
+            <div className="p-3 bg-purple-50 dark:bg-purple-500/10 rounded-xl text-purple-700 dark:text-purple-400">
               <Zap size={20} />
             </div>
           </div>
-          <div className="flex items-center gap-1 mt-4 text-xs text-slate-450 dark:text-slate-400 font-medium">
+          <div className="flex items-center gap-1 mt-4 text-xs text-[#5B6B8A] dark:text-slate-400 font-bold">
             <span>Stable operating index</span>
           </div>
         </GlassCard>
@@ -201,14 +201,14 @@ const Analytics = () => {
         <GlassCard className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Active Bids Allocated</span>
-              <h3 className="text-3xl font-bold text-white mt-1">{summary.totalBids}</h3>
+              <span className="text-xs font-bold uppercase tracking-wider text-[#5B6B8A] dark:text-slate-400">Active Bids Allocated</span>
+              <h3 className="text-3xl font-black text-[#12213A] dark:text-white mt-1">{summary.totalBids}</h3>
             </div>
-            <div className="p-3 bg-amber-500/10 rounded-xl text-amber-400">
+            <div className="p-3 bg-amber-50 dark:bg-amber-500/10 rounded-xl text-amber-700 dark:text-amber-400">
               <Users size={20} />
             </div>
           </div>
-          <div className="flex items-center gap-1 mt-4 text-xs text-amber-400 font-medium">
+          <div className="flex items-center gap-1 mt-4 text-xs text-amber-700 dark:text-amber-400 font-bold">
             <Flame size={12} className="animate-pulse" />
             <span>High pipeline engagement</span>
           </div>
@@ -225,16 +225,16 @@ const Analytics = () => {
           <GlassCard className="p-6">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h4 className="text-sm font-semibold text-white">Departmental Value Allocation</h4>
-                <p className="text-xs text-slate-500 mt-0.5">Won revenue and completed tasks by operating business units.</p>
+                <h4 className="text-sm font-bold text-slate-800 dark:text-white">Departmental Value Allocation</h4>
+                <p className="text-xs text-[#5B6B8A] dark:text-slate-500 mt-0.5">Won revenue and completed tasks by operating business units.</p>
               </div>
-              <span className="text-xs font-medium px-2 py-0.5 bg-slate-900 border border-slate-800 rounded-md text-slate-400">
+              <span className="text-xs font-semibold px-2 py-0.5 bg-white dark:bg-slate-900 border border-[#DCE3F1] dark:border-slate-800 rounded-md text-[#5B6B8A] dark:text-slate-400 shadow-sm">
                 Live Data
               </span>
             </div>
 
-            <div className="h-80 w-full">
-              <ResponsiveContainer width="99%" height="100%">
+            <div className="w-full h-[320px] min-h-[320px]">
+              <ResponsiveContainer width="100%" height={320}>
                 <BarChart data={departmentAnalytics} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" opacity={0.3} />
                   <XAxis dataKey="name" stroke="#64748b" fontSize={11} tickLine={false} />
@@ -255,13 +255,13 @@ const Analytics = () => {
           <GlassCard className="p-6">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h4 className="text-sm font-semibold text-white">Operating Efficiency Profile</h4>
-                <p className="text-xs text-slate-500 mt-0.5">Average compliance and project delivery speeds (%) by department.</p>
+                <h4 className="text-sm font-bold text-slate-800 dark:text-white">Operating Efficiency Profile</h4>
+                <p className="text-xs text-[#5B6B8A] dark:text-slate-500 mt-0.5">Average compliance and project delivery speeds (%) by department.</p>
               </div>
             </div>
 
-            <div className="h-72 w-full">
-              <ResponsiveContainer width="99%" height="100%">
+            <div className="w-full h-[288px] min-h-[288px]">
+              <ResponsiveContainer width="100%" height={288}>
                 <LineChart data={departmentAnalytics} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" opacity={0.2} />
                   <XAxis dataKey="name" stroke="#64748b" fontSize={11} />
@@ -279,15 +279,15 @@ const Analytics = () => {
           {/* Activity Heatmap Grid */}
           <GlassCard className="p-6">
             <div className="flex items-center gap-2 mb-6">
-              <Activity size={16} className="text-blue-500" />
+              <Activity size={16} className="text-blue-600 dark:text-blue-500" />
               <div>
-                <h4 className="text-sm font-semibold text-white">Activity Heatmap</h4>
-                <p className="text-xs text-slate-500 mt-0.5">Weekly push operations and update frequencies across development teams.</p>
+                <h4 className="text-sm font-bold text-slate-800 dark:text-white">Activity Heatmap</h4>
+                <p className="text-xs text-[#5B6B8A] dark:text-slate-500 mt-0.5">Weekly push operations and update frequencies across development teams.</p>
               </div>
             </div>
 
-            <div className="h-64 w-full">
-              <ResponsiveContainer width="99%" height="100%">
+            <div className="w-full h-[256px] min-h-[256px]">
+              <ResponsiveContainer width="100%" height={256}>
                 <AreaChart data={heatmapData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorEng" x1="0" y1="0" x2="0" y2="1">
@@ -319,40 +319,40 @@ const Analytics = () => {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
                 <Award size={18} className="text-amber-500" />
-                <h4 className="text-sm font-semibold text-white">Leaderboard Ranking</h4>
+                <h4 className="text-sm font-bold text-slate-800 dark:text-white">Leaderboard Ranking</h4>
               </div>
-              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Won Value</span>
+              <span className="text-[10px] uppercase font-bold tracking-wider text-[#5B6B8A] dark:text-slate-500">Won Value</span>
             </div>
 
             <div className="space-y-4">
               {rankedLeaderboard.map((member, i) => (
-                <div key={member.id} className="flex items-center justify-between p-2 rounded-xl bg-slate-900/10 hover:bg-slate-900/30 border border-slate-900/20 hover:border-slate-800/40 transition-all group">
+                <div key={member.id} className="flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-slate-900/10 hover:bg-[#EAF1FF]/45 dark:hover:bg-slate-900/30 border border-[#DCE3F1] dark:border-slate-900/20 hover:border-[#2447A5]/30 dark:hover:border-slate-800/40 transition-all group shadow-sm animate-fade-in">
                   <div className="flex items-center gap-3">
                     {/* Rank Badge */}
                     <div className={`h-6 w-6 rounded-md flex items-center justify-center font-bold text-xs ${
-                      i === 0 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
-                      i === 1 ? 'bg-slate-350/20 text-slate-300 border border-slate-400/20' :
-                      i === 2 ? 'bg-amber-700/20 text-amber-600 border border-amber-700/20' : 'bg-slate-900 border border-slate-800 text-slate-500'
+                      i === 0 ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30' :
+                      i === 1 ? 'bg-slate-300/20 text-slate-650 dark:text-slate-300 border border-slate-400/20' :
+                      i === 2 ? 'bg-amber-700/20 text-amber-700 dark:text-amber-600 border border-amber-700/20' : 'bg-[#F8FAFC] dark:bg-slate-900 border border-[#DCE3F1] dark:border-slate-800 text-[#5B6B8A] dark:text-slate-500'
                     }`}>
                       {i + 1}
                     </div>
 
                     {/* Member details */}
                     <div>
-                      <div className="text-xs font-semibold text-white flex items-center gap-1.5">
+                      <div className="text-xs font-bold text-[#12213A] dark:text-white flex items-center gap-1.5">
                         {member.name}
                       </div>
-                      <div className="text-[10px] text-slate-500 font-medium">
+                      <div className="text-[10px] text-[#5B6B8A] dark:text-slate-500 font-medium">
                         {member.department} • {member.role}
                       </div>
                     </div>
                   </div>
 
                   <div className="text-right">
-                    <div className="text-xs font-bold text-slate-200">
+                    <div className="text-xs font-bold text-[#12213A] dark:text-slate-200">
                       ${(member.revenue / 1000).toFixed(0)}k
                     </div>
-                    <div className="text-[9px] text-emerald-400 font-semibold flex items-center gap-0.5 justify-end mt-0.5">
+                    <div className="text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-0.5 justify-end mt-0.5">
                       <Zap size={8} /> {member.efficiency}%
                     </div>
                   </div>
@@ -366,9 +366,9 @@ const Analytics = () => {
 
           {/* Department Share Ratio visualizer */}
           <GlassCard className="p-6">
-            <h4 className="text-sm font-semibold text-white mb-4">Pipeline Distribution</h4>
-            <div className="h-56 w-full flex items-center justify-center">
-              <ResponsiveContainer width="99%" height="100%">
+            <h4 className="text-sm font-bold text-slate-850 dark:text-white mb-4">Pipeline Distribution</h4>
+            <div className="w-full h-[224px] min-h-[224px] flex items-center justify-center">
+              <ResponsiveContainer width="100%" height={224}>
                 <PieChart>
                   <Pie
                     data={departmentAnalytics}
@@ -384,7 +384,7 @@ const Analytics = () => {
                     ))}
                   </Pie>
                   <Tooltip 
-                    contentStyle={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px' }}
+                    contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #DCE3F1', borderRadius: '12px', color: '#12213A' }}
                     labelStyle={{ fontSize: '11px' }}
                   />
                 </PieChart>
@@ -396,7 +396,7 @@ const Analytics = () => {
               {departmentAnalytics.map((dept, index) => (
                 <div key={dept.name} className="flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
-                  <span className="text-[10px] font-semibold text-slate-400 truncate uppercase">{dept.name}</span>
+                  <span className="text-[10px] font-bold text-[#5B6B8A] dark:text-slate-400 truncate uppercase">{dept.name}</span>
                 </div>
               ))}
             </div>

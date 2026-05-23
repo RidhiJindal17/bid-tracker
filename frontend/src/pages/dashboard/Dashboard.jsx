@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import PageTransition from '../../components/ui/PageTransition';
 import GlassCard from '../../components/ui/GlassCard';
 import SectionTitle from '../../components/ui/SectionTitle';
@@ -57,6 +57,11 @@ const Dashboard = () => {
       }
     };
     fetchOnlineCount();
+  }, [fetchBids, fetchAnalytics]);
+
+  const handleActionApplied = useCallback(() => {
+    fetchBids({ limit: 1000 });
+    fetchAnalytics();
   }, [fetchBids, fetchAnalytics]);
 
   // Real-Time Analytics Calculators with fallbacks to high-fidelity enterprise data
@@ -279,10 +284,7 @@ const Dashboard = () => {
         <ActivityFeed />
 
         {/* Dynamic AI Smart Recommendation Actions Feed */}
-        <AISmartActions onActionApplied={() => {
-          fetchBids({ limit: 1000 });
-          fetchAnalytics();
-        }} />
+        <AISmartActions onActionApplied={handleActionApplied} />
       </div>
     </PageTransition>
   );

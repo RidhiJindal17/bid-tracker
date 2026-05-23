@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import { AppError } from './errorMiddleware.js';
 
 /**
  * Middleware to protect routes. 
@@ -23,7 +24,7 @@ export const protect = async (req, res, next) => {
       req.user = await User.findById(decoded.id).select('-password');
 
       if (!req.user) {
-        return res.status(401).json({ message: 'Not authorized, user not found' });
+        return next(new AppError('Not authorized, user not found', 401));
       }
 
       // Update lastActive timestamp
@@ -32,12 +33,12 @@ export const protect = async (req, res, next) => {
       next();
     } catch (error) {
       console.error('[AUTH ERROR] JWT verification failed:', error.message);
-      return res.status(401).json({ message: 'Not authorized, token failed' });
+      next(error);
     }
   }
 
   if (!token) {
-    return res.status(401).json({ message: 'Not authorized, no token' });
+    return next(new AppError('Not authorized, no token provided', 401));
   }
 };
 
@@ -54,7 +55,7 @@ export const checkRole = (...roles) => {
   return (req, res, next) => {
     if (!req.user) {
       console.warn('[AUTH WARNING] Access attempted without user context.');
-      return res.status(401).json({ message: 'Not authorized, no user context' });
+      return next(new AppError('Not authorized, no user context', 401));
     }
     
     const userRole = (req.user.role || '').toLowerCase();
@@ -62,9 +63,7 @@ export const checkRole = (...roles) => {
 
     if (!allowedRoles.includes(userRole)) {
       console.warn(`[AUTH FORBIDDEN] User "${req.user.name}" (${req.user.email}) with role "${req.user.role}" attempted to access path "${req.originalUrl || req.path}" but was blocked. Allowed roles: ${roles.join(', ')}`);
-      return res.status(403).json({ 
-        message: `Access denied. Role '${req.user.role}' is not authorized to perform this action.` 
-      });
+      return next(new AppError(`Access denied. Role '${req.user.role}' is not authorized to perform this action.`, 403));
     }
     
     console.info(`[AUTH GRANTED] User "${req.user.name}" (${req.user.role}) accessed path "${req.originalUrl || req.path}"`);

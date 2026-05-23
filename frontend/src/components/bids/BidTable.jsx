@@ -5,21 +5,21 @@ import Card from '../ui/Card';
 import { useAuth } from '../../context/AuthContext';
 
 const STATUS_BADGES = {
-  'New Enquiry': 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-500/20',
-  'Under Review': 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20',
-  'Quotation Sent': 'bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-500/20',
-  'Negotiation': 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20',
-  'Approved': 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20',
-  'Rejected': 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-500/20',
-  'Order Processing': 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20',
-  'Completed': 'bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-200 dark:border-teal-500/20',
+  'New Enquiry': 'bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-100 dark:border-sky-500/20',
+  'Under Review': 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-500/20',
+  'Quotation Sent': 'bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-100 dark:border-purple-500/20',
+  'Negotiation': 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border-indigo-100 dark:border-indigo-500/20',
+  'Approved': 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20',
+  'Rejected': 'bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-100 dark:border-rose-500/20',
+  'Order Processing': 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-100 dark:border-blue-500/20',
+  'Completed': 'bg-teal-50 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 border-teal-100 dark:border-teal-500/20',
 };
 
 const PRIORITY_BADGES = {
-  'Low': 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-500/20',
-  'Medium': 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20',
-  'High': 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20',
-  'Urgent': 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-200 dark:border-red-500/20',
+  'Low': 'bg-slate-50 dark:bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-100 dark:border-slate-500/20',
+  'Medium': 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-100 dark:border-blue-500/20',
+  'High': 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-500/20',
+  'Urgent': 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-100 dark:border-red-500/20',
 };
 
 const renderAssignees = (assignedTo) => {
@@ -109,7 +109,7 @@ const BidTable = ({
                     <div className="font-semibold text-slate-900 dark:text-white group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors">
                       {bid.title}
                     </div>
-                    <div className="text-xs text-slate-450 dark:text-slate-500 mt-0.5">{bid.clientName}</div>
+                    <div className="text-xs text-[#5B6B8A] dark:text-slate-500 mt-0.5">{bid.clientName}</div>
                   </td>
                   <td className="py-4 px-6 font-bold text-slate-900 dark:text-slate-200">
                     ${bid.value.toLocaleString(undefined, { minimumFractionDigits: 0 })}
@@ -221,4 +221,4 @@ const BidTable = ({
   );
 };
 
-export default BidTable;
+export default React.memo(BidTable);

@@ -5,7 +5,7 @@ import AuditLog from '../models/AuditLog.js';
  * @route   GET /api/audit-logs
  * @access  Private (Admin only can be enforced, or standard Private)
  */
-export const getAuditLogs = async (req, res) => {
+export const getAuditLogs = async (req, res, next) => {
   try {
     const query = {};
 
@@ -67,7 +67,6 @@ export const getAuditLogs = async (req, res) => {
       total,
     });
   } catch (error) {
-    console.error('AuditLog controller error:', error);
-    res.status(500).json({ message: 'Server error, failed to retrieve audit logs.' });
+    next(error);
   }
 };

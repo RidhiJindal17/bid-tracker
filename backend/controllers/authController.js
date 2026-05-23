@@ -2,6 +2,7 @@ import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 import validator from 'validator';
 import { logActivity } from '../utils/auditLogger.js';
+import { AppError } from '../middleware/errorMiddleware.js';
 
 /**
  * Generate a JWT token for a given user ID.
@@ -21,21 +22,21 @@ const generateToken = (id, role) => {
  * @route   POST /api/auth/signup
  * @access  Public
  */
-export const signup = async (req, res) => {
+export const signup = async (req, res, next) => {
   try {
     let { name, email, password, role } = req.body;
 
     // Validate Input Parameters
     if (!name || typeof name !== 'string' || name.trim() === '') {
-      return res.status(400).json({ message: 'Name is required' });
+      return next(new AppError('Name is required', 400));
     }
 
     if (!email || typeof email !== 'string' || !validator.isEmail(email)) {
-      return res.status(400).json({ message: 'Please provide a valid email address' });
+      return next(new AppError('Please provide a valid email address', 400));
     }
 
     if (!password || typeof password !== 'string' || password.length < 8) {
-      return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+      return next(new AppError('Password must be at least 8 characters long', 400));
     }
 
     // Normalize email (lowercase, strip trailing spaces, etc.)
@@ -44,7 +45,7 @@ export const signup = async (req, res) => {
     // Check if user exists
     const userExists = await User.findOne({ email: cleanEmail });
     if (userExists) {
-      return res.status(400).json({ message: 'User already exists' });
+      return next(new AppError('User already exists', 400));
     }
 
     // Create user
@@ -73,10 +74,10 @@ export const signup = async (req, res) => {
         token: generateToken(user._id, user.role),
       });
     } else {
-      res.status(400).json({ message: 'Invalid user data' });
+      return next(new AppError('Invalid user data', 400));
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
@@ -85,12 +86,12 @@ export const signup = async (req, res) => {
  * @route   POST /api/auth/login
  * @access  Public
  */
-export const login = async (req, res) => {
+export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
     if (!email || typeof email !== 'string' || !validator.isEmail(email)) {
-      return res.status(400).json({ message: 'Please provide a valid email address' });
+      return next(new AppError('Please provide a valid email address', 400));
     }
 
     const cleanEmail = validator.normalizeEmail(email);
@@ -125,10 +126,10 @@ export const login = async (req, res) => {
         req,
       });
 
-      res.status(401).json({ message: 'Invalid email or password' });
+      return next(new AppError('Invalid email or password', 401));
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
@@ -137,7 +138,7 @@ export const login = async (req, res) => {
  * @route   GET /api/auth/me
  * @access  Private
  */
-export const getMe = async (req, res) => {
+export const getMe = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
 
@@ -149,10 +150,10 @@ export const getMe = async (req, res) => {
         role: user.role,
       });
     } else {
-      res.status(404).json({ message: 'User not found' });
+      return next(new AppError('User not found', 404));
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
@@ -161,12 +162,12 @@ export const getMe = async (req, res) => {
  * @route   GET /api/auth/users
  * @access  Private
  */
-export const getUsers = async (req, res) => {
+export const getUsers = async (req, res, next) => {
   try {
     const users = await User.find({}).select('name email role');
     res.json(users);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 

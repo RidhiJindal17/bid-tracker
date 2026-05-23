@@ -1,12 +1,14 @@
 import User from '../models/User.js';
 import Bid from '../models/Bid.js';
 import { logActivity } from '../utils/auditLogger.js';
+import validator from 'validator';
+import { AppError } from '../middleware/errorMiddleware.js';
 
 /**
  * Get all team members with optional search, role, and department filters
  * GET /api/users
  */
-export const getTeamMembers = async (req, res) => {
+export const getTeamMembers = async (req, res, next) => {
   try {
     const { search, role, department } = req.query;
     let query = {};
@@ -51,12 +53,7 @@ export const getTeamMembers = async (req, res) => {
       data: formattedMembers
     });
   } catch (error) {
-    console.error('Error inside getTeamMembers controller:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Failed to retrieve team members.',
-      error: error.message
-    });
+    next(error);
   }
 };
 
@@ -64,33 +61,39 @@ export const getTeamMembers = async (req, res) => {
  * Invite / Add a new team member
  * POST /api/users
  */
-export const addTeamMember = async (req, res) => {
-  const { name, email, role, department } = req.body;
+export const addTeamMember = async (req, res, next) => {
+  let { name, email, role, department } = req.body;
 
-  if (!name || !email || !role || !department) {
-    return res.status(400).json({
-      success: false,
-      message: 'Please provide all required fields: name, email, role, department.'
-    });
+  if (!name || typeof name !== 'string' || name.trim() === '') {
+    return next(new AppError('Name is required', 400));
   }
+  if (!email || typeof email !== 'string' || !validator.isEmail(email)) {
+    return next(new AppError('Please provide a valid email address', 400));
+  }
+  if (!role || typeof role !== 'string' || role.trim() === '') {
+    return next(new AppError('Role is required', 400));
+  }
+  if (!department || typeof department !== 'string' || department.trim() === '') {
+    return next(new AppError('Department is required', 400));
+  }
+
+  const cleanEmail = validator.normalizeEmail(email);
+  const cleanName = validator.escape(name.trim());
 
   try {
     // Check if user already exists
-    const userExists = await User.findOne({ email });
+    const userExists = await User.findOne({ email: cleanEmail });
     if (userExists) {
-      return res.status(400).json({
-        success: false,
-        message: 'A user with this email address already exists.'
-      });
+      return next(new AppError('A user with this email address already exists.', 400));
     }
 
     // Create user with default temporary password
     const defaultPassword = 'TempPassword123!';
     const newMember = await User.create({
-      name,
-      email,
-      role,
-      department,
+      name: cleanName,
+      email: cleanEmail,
+      role: role.trim(),
+      department: department.trim(),
       password: defaultPassword,
       status: 'offline',
       performanceMetrics: {
@@ -105,7 +108,7 @@ export const addTeamMember = async (req, res) => {
       action: 'Team Member Invited',
       entityType: 'User',
       entityId: newMember._id,
-      details: `Invited new team member "${name}" (${email}) as ${role} inside ${department} department.`,
+      details: `Invited new team member "${cleanName}" (${cleanEmail}) as ${role} inside ${department} department.`,
       req
     });
 
@@ -119,12 +122,7 @@ export const addTeamMember = async (req, res) => {
       data: responseData
     });
   } catch (error) {
-    console.error('Error inside addTeamMember controller:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Failed to invite team member.',
-      error: error.message
-    });
+    next(error);
   }
 };
 
@@ -132,9 +130,16 @@ export const addTeamMember = async (req, res) => {
  * Update team member role, department, status, or performance
  * PUT /api/users/:id
  */
-export const updateTeamMember = async (req, res) => {
+export const updateTeamMember = async (req, res, next) => {
   const { id } = req.params;
-  const { name, email, role, department, status, performanceMetrics } = req.body;
+  let { name, email, role, department, status, performanceMetrics } = req.body;
+
+  if (email && (typeof email !== 'string' || !validator.isEmail(email))) {
+    return next(new AppError('Please provide a valid email address', 400));
+  }
+
+  const cleanEmail = email ? validator.normalizeEmail(email) : undefined;
+  const cleanName = name ? validator.escape(name.trim()) : undefined;
 
   try {
     const member = await User.findById(id);
@@ -146,10 +151,10 @@ export const updateTeamMember = async (req, res) => {
     }
 
     // Apply updates
-    if (name) member.name = name;
-    if (email) member.email = email;
-    if (role) member.role = role;
-    if (department) member.department = department;
+    if (cleanName) member.name = cleanName;
+    if (cleanEmail) member.email = cleanEmail;
+    if (role) member.role = role.trim();
+    if (department) member.department = department.trim();
     if (status) member.status = status;
     if (performanceMetrics) {
       member.performanceMetrics = {
@@ -175,12 +180,7 @@ export const updateTeamMember = async (req, res) => {
       data: member
     });
   } catch (error) {
-    console.error('Error inside updateTeamMember controller:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Failed to update team member.',
-      error: error.message
-    });
+    next(error);
   }
 };
 
@@ -188,7 +188,7 @@ export const updateTeamMember = async (req, res) => {
  * Delete a team member
  * DELETE /api/users/:id
  */
-export const deleteTeamMember = async (req, res) => {
+export const deleteTeamMember = async (req, res, next) => {
   const { id } = req.params;
 
   try {
@@ -222,12 +222,7 @@ export const deleteTeamMember = async (req, res) => {
       message: 'Team member deleted and unassigned from projects successfully.'
     });
   } catch (error) {
-    console.error('Error inside deleteTeamMember controller:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Failed to delete team member.',
-      error: error.message
-    });
+    next(error);
   }
 };
 
@@ -235,7 +230,7 @@ export const deleteTeamMember = async (req, res) => {
  * Compile aggregate metrics and statistics for the team performance view
  * GET /api/users/performance
  */
-export const getTeamPerformance = async (req, res) => {
+export const getTeamPerformance = async (req, res, next) => {
   try {
     const bids = await Bid.find().lean();
     const members = await User.find().lean();
@@ -284,12 +279,7 @@ export const getTeamPerformance = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error inside getTeamPerformance controller:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Failed to compile team performance aggregates.',
-      error: error.message
-    });
+    next(error);
   }
 };
 
@@ -297,7 +287,7 @@ export const getTeamPerformance = async (req, res) => {
  * Fetch chronological user activities across the team
  * GET /api/users/activities
  */
-export const getTeamActivities = async (req, res) => {
+export const getTeamActivities = async (req, res, next) => {
   try {
     const users = await User.find({}, 'name role department activityHistory').lean();
     let activities = [];
@@ -326,12 +316,7 @@ export const getTeamActivities = async (req, res) => {
       data: activities.slice(0, 15) // Top 15 recent activities
     });
   } catch (error) {
-    console.error('Error inside getTeamActivities controller:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Failed to fetch team activities.',
-      error: error.message
-    });
+    next(error);
   }
 };
 

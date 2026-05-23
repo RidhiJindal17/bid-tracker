@@ -59,13 +59,13 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen, i
           x: isMobile ? (isMobileOpen ? 0 : -280) : 0
         }}
         transition={{ type: 'spring', damping: 26, stiffness: 220 }}
-        className={`fixed left-0 top-0 h-screen border-r border-slate-200 dark:border-slate-800/40 bg-white/80 dark:bg-[#030712]/80 backdrop-blur-xl transition-all duration-300 ${isMobile ? 'z-50' : 'z-40'}`}
+        className={`fixed left-0 top-0 h-screen border-r border-[#DCE3F1] dark:border-slate-800/40 bg-white dark:bg-[#030712] transition-all duration-300 ${isMobile ? 'z-50' : 'z-40'} shadow-sm`}
       >
         <div className="flex h-full flex-col p-4">
           {/* Logo */}
           <div className="mb-8 flex items-center gap-3 px-2 py-1.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 to-violet-600 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
-              <Zap className="h-5.5 w-5.5 text-white" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-[#2447A5] to-[#4F7DFF] shadow-[0_4px_14px_rgba(36,71,165,0.25)]">
+              <Zap className="h-5.5 w-5.5 text-white animate-pulse" />
             </div>
             <AnimatePresence>
               {(!isCollapsed || isMobile) && (
@@ -73,10 +73,10 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen, i
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
-                  className="text-lg font-bold tracking-tight text-slate-900 dark:text-white"
+                  className="text-lg font-bold tracking-tight text-[#12213A] dark:text-white"
                 >
-                  Bid<span className="text-blue-500">AI</span>
-                  <span className="ml-1.5 rounded-md bg-blue-500/10 border border-blue-500/20 px-1.5 py-0.5 text-[9px] font-bold text-blue-400 uppercase tracking-wide">SaaS</span>
+                  Bid<span className="text-[#2447A5] dark:text-[#4F7DFF]">AI</span>
+                  <span className="ml-1.5 rounded-md bg-[#EAF1FF] border border-[#DCE3F1] dark:bg-blue-500/10 dark:border-blue-500/20 px-1.5 py-0.5 text-[9px] font-extrabold text-[#2447A5] dark:text-blue-400 uppercase tracking-wide">SaaS</span>
                 </motion.span>
               )}
             </AnimatePresence>
@@ -90,10 +90,10 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen, i
                 to={item.path}
                 onClick={() => isMobile && setIsMobileOpen(false)}
                 className={({ isActive }) => `
-                  relative flex items-center gap-3 rounded-xl px-3 py-3 transition-all duration-200 group
+                  relative flex items-center gap-3 rounded-xl px-3 py-3 transition-all duration-200 group border
                   ${isActive 
-                    ? 'bg-blue-50 dark:bg-blue-600/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/10 shadow-[0_0_15px_rgba(59,130,246,0.05)] font-semibold' 
-                    : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100/60 dark:hover:bg-slate-800/40 hover:text-slate-900 dark:hover:text-slate-200'}
+                    ? 'bg-[#EAF1FF] dark:bg-blue-600/10 text-[#2447A5] dark:text-blue-400 border-[#DCE3F1]/80 dark:border-blue-500/10 shadow-[0_4px_12px_rgba(36,71,165,0.06)] font-bold' 
+                    : 'border-transparent text-[#5B6B8A] dark:text-slate-400 hover:bg-[#EAF1FF]/40 dark:hover:bg-slate-800/40 hover:text-[#2447A5] dark:hover:text-slate-200'}
                 `}
               >
                 <item.icon className="h-5 w-5 shrink-0 transition-transform group-hover:scale-105" />
@@ -103,7 +103,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen, i
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -10 }}
-                      className="whitespace-nowrap font-medium text-sm"
+                      className="whitespace-nowrap font-semibold text-sm"
                     >
                       {item.label}
                     </motion.span>
@@ -117,7 +117,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen, i
           {!isMobile && (
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="mt-auto flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800/80 bg-slate-100/50 dark:bg-[#090d1f]/50 p-2.5 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-slate-200 transition-colors shadow-sm"
+              className="mt-auto flex items-center justify-center rounded-xl border border-[#DCE3F1] dark:border-slate-800/80 bg-slate-50 dark:bg-[#090d1f]/50 p-2.5 text-[#5B6B8A] dark:text-slate-400 hover:bg-[#EAF1FF]/60 dark:hover:bg-slate-800 hover:text-[#2447A5] dark:hover:text-slate-200 transition-colors shadow-sm cursor-pointer"
             >
               {isCollapsed ? <Menu className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </button>
@@ -128,4 +128,4 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen, i
   );
 };
 
-export default Sidebar;
+export default React.memo(Sidebar);

@@ -28,17 +28,17 @@ import { toast } from 'react-hot-toast';
 const getEntityIcon = (type) => {
   switch (type) {
     case 'Bid':
-      return { icon: Briefcase, color: 'text-blue-400 bg-blue-500/10 border-blue-500/20' };
+      return { icon: Briefcase, color: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 border-blue-100 dark:border-blue-500/20' };
     case 'Upload':
-      return { icon: FileUp, color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' };
+      return { icon: FileUp, color: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20' };
     case 'User':
-      return { icon: User, color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20' };
+      return { icon: User, color: 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 border-indigo-100 dark:border-indigo-500/20' };
     case 'AI':
-      return { icon: Cpu, color: 'text-purple-400 bg-purple-500/10 border-purple-500/20' };
+      return { icon: Cpu, color: 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/10 border-purple-100 dark:border-purple-500/20' };
     case 'Auth':
-      return { icon: Lock, color: 'text-amber-400 bg-amber-500/10 border-amber-500/20' };
+      return { icon: Lock, color: 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border-amber-100 dark:border-amber-500/20' };
     default:
-      return { icon: Settings, color: 'text-slate-400 bg-slate-500/10 border-slate-500/20' };
+      return { icon: Settings, color: 'text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-500/10 border-slate-100 dark:border-slate-500/20' };
   }
 };
 
@@ -46,18 +46,18 @@ const getEntityIcon = (type) => {
 const getActionColor = (action) => {
   const label = action.toLowerCase();
   if (label.includes('delete') || label.includes('fail') || label.includes('remove')) {
-    return 'text-red-400 bg-red-500/10 border-red-500/20';
+    return 'text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-500/10 border-red-100 dark:border-red-500/20';
   }
   if (label.includes('create') || label.includes('register') || label.includes('upload') || label.includes('success')) {
-    return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
+    return 'text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20';
   }
   if (label.includes('update') || label.includes('change') || label.includes('edit')) {
-    return 'text-amber-400 bg-amber-500/10 border-amber-500/20';
+    return 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border-amber-100 dark:border-amber-500/20';
   }
   if (label.includes('ai') || label.includes('generate') || label.includes('chat')) {
-    return 'text-purple-400 bg-purple-500/10 border-purple-500/20';
+    return 'text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/10 border-purple-100 dark:border-purple-500/20';
   }
-  return 'text-slate-400 bg-slate-500/10 border-slate-500/20';
+  return 'text-slate-700 dark:text-slate-400 bg-slate-50 dark:bg-slate-500/10 border-slate-100 dark:border-slate-500/20';
 };
 
 const AuditLogs = () => {
@@ -135,30 +135,30 @@ const AuditLogs = () => {
       {/* Header section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-2">
-            <ShieldAlert className="h-8 w-8 text-blue-500" /> Security Audit Logs
+          <h1 className="text-3xl font-bold text-[#12213A] dark:text-white tracking-tight flex items-center gap-2">
+            <ShieldAlert className="h-8 w-8 text-[#2447A5] dark:text-blue-500" /> Security Audit Logs
           </h1>
-          <p className="text-slate-400 text-sm mt-1">Real-time enterprise compliance ledger, user access activity, and platform transaction history.</p>
+          <p className="text-[#5B6B8A] dark:text-slate-400 text-sm mt-1">Real-time enterprise compliance ledger, user access activity, and platform transaction history.</p>
         </div>
         <Button 
           variant="outline" 
           onClick={() => fetchLogs(page)} 
           disabled={loading}
-          className="rounded-xl border-slate-800 hover:border-slate-700 font-semibold gap-2 shrink-0 cursor-pointer"
+          className="rounded-xl border-[#DCE3F1] dark:border-slate-800 hover:border-[#2447A5]/30 dark:hover:border-slate-700 font-semibold gap-2 shrink-0 cursor-pointer"
         >
-          <RefreshCw className={`h-4 w-4 text-blue-400 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`h-4 w-4 text-[#2447A5] dark:text-blue-400 ${loading ? 'animate-spin' : ''}`} />
           Refresh Ledger
         </Button>
       </div>
 
       {/* Sticky Glassmorphic Filter Panel */}
-      <GlassCard className="p-5 border-slate-800 bg-[#090d1f]/40 backdrop-blur-md sticky top-[72px] z-30">
+      <GlassCard className="p-5 border-[#DCE3F1] dark:border-slate-800 bg-white dark:bg-[#090d1f]/40 backdrop-blur-md sticky top-[72px] z-30 shadow-sm">
         <form onSubmit={handleSearchSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
             
             {/* Text Search */}
             <div className="md:col-span-4 space-y-2">
-              <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Search Details</label>
+              <label className="text-xs font-bold text-[#5B6B8A] dark:text-slate-400 uppercase tracking-wider">Search Details</label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                 <input
@@ -166,18 +166,18 @@ const AuditLogs = () => {
                   placeholder="Query actions, users, details..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-slate-800 bg-slate-950/40 text-slate-200 placeholder-slate-600 focus:border-blue-500 focus:outline-none transition-all"
+                  className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-[#DCE3F1] dark:border-slate-800 bg-white dark:bg-slate-950/40 text-slate-800 dark:text-slate-200 placeholder-[#5B6B8A]/50 dark:placeholder-slate-600 focus:border-[#2447A5] dark:focus:border-blue-500 focus:outline-none transition-all shadow-sm"
                 />
               </div>
             </div>
 
             {/* Entity Select */}
             <div className="md:col-span-3 space-y-2">
-              <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Entity Class</label>
+              <label className="text-xs font-bold text-[#5B6B8A] dark:text-slate-400 uppercase tracking-wider">Entity Class</label>
               <select
                 value={selectedEntity}
                 onChange={(e) => setSelectedEntity(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-xl border border-slate-800 bg-[#090d1f] text-slate-300 focus:border-blue-500 focus:outline-none transition-all"
+                className="w-full px-3 py-2 text-sm rounded-xl border border-[#DCE3F1] dark:border-slate-800 bg-white dark:bg-[#090d1f] text-slate-700 dark:text-slate-300 focus:border-[#2447A5] dark:focus:border-blue-500 focus:outline-none transition-all shadow-sm"
               >
                 <option value="">All Entities</option>
                 <option value="Bid">Bids Pipeline (Bid)</option>
@@ -191,20 +191,20 @@ const AuditLogs = () => {
 
             {/* Date Bounded Range */}
             <div className="md:col-span-3 space-y-2">
-              <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Date Filters</label>
+              <label className="text-xs font-bold text-[#5B6B8A] dark:text-slate-400 uppercase tracking-wider">Date Filters</label>
               <div className="flex gap-2 items-center">
                 <input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full px-2 py-1.5 text-xs rounded-lg border border-slate-800 bg-[#090d1f] text-slate-300 focus:border-blue-500 focus:outline-none"
+                  className="w-full px-2 py-1.5 text-xs rounded-lg border border-[#DCE3F1] dark:border-slate-800 bg-white dark:bg-[#090d1f] text-slate-700 dark:text-slate-300 focus:border-[#2447A5] dark:focus:border-blue-500 focus:outline-none shadow-sm"
                 />
-                <span className="text-slate-600 text-xs">to</span>
+                <span className="text-slate-500 text-xs">to</span>
                 <input
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full px-2 py-1.5 text-xs rounded-lg border border-slate-800 bg-[#090d1f] text-slate-300 focus:border-blue-500 focus:outline-none"
+                  className="w-full px-2 py-1.5 text-xs rounded-lg border border-[#DCE3F1] dark:border-slate-800 bg-white dark:bg-[#090d1f] text-slate-700 dark:text-slate-300 focus:border-[#2447A5] dark:focus:border-blue-500 focus:outline-none shadow-sm"
                 />
               </div>
             </div>
@@ -213,14 +213,14 @@ const AuditLogs = () => {
             <div className="md:col-span-2 flex gap-2">
               <button
                 type="submit"
-                className="w-full py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(59,130,246,0.3)]"
+                className="w-full py-2 text-xs font-bold text-white bg-[#2447A5] hover:bg-[#4F7DFF] rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md"
               >
                 <Filter className="h-3.5 w-3.5" /> Apply
               </button>
               <button
                 type="button"
                 onClick={handleResetFilters}
-                className="px-3 py-2 text-xs font-bold text-slate-400 hover:text-white border border-slate-800 hover:border-slate-700 bg-transparent rounded-xl transition-all cursor-pointer"
+                className="px-3 py-2 text-xs font-bold text-[#5B6B8A] dark:text-slate-400 hover:text-slate-800 dark:hover:text-white border border-[#DCE3F1] dark:border-slate-800 hover:border-[#2447A5]/30 dark:hover:border-slate-700 bg-transparent rounded-xl transition-all cursor-pointer shadow-sm"
               >
                 Clear
               </button>
@@ -233,20 +233,20 @@ const AuditLogs = () => {
       {/* Main Ledger Content */}
       {loading ? (
         <div className="flex flex-col items-center justify-center min-h-[300px] gap-3">
-          <Loader2 className="h-10 w-10 text-blue-500 animate-spin" />
-          <p className="text-slate-500 font-medium text-sm">Parsing security logs...</p>
+          <Loader2 className="h-10 w-10 text-[#2447A5] dark:text-blue-500 animate-spin" />
+          <p className="text-[#5B6B8A] dark:text-slate-500 font-medium text-sm">Parsing security logs...</p>
         </div>
       ) : logs.length === 0 ? (
-        <GlassCard className="p-16 text-center border-slate-800/80 bg-transparent">
-          <ShieldAlert className="h-12 w-12 text-slate-600 mx-auto mb-4" />
-          <h3 className="text-lg font-bold text-slate-300">No Logs Found</h3>
-          <p className="text-slate-500 text-sm mt-1 max-w-md mx-auto">
+        <GlassCard className="p-16 text-center border-[#DCE3F1] dark:border-slate-800/80 bg-transparent">
+          <ShieldAlert className="h-12 w-12 text-slate-650 mx-auto mb-4" />
+          <h3 className="text-lg font-bold text-slate-800 dark:text-slate-300">No Logs Found</h3>
+          <p className="text-[#5B6B8A] dark:text-slate-500 text-sm mt-1 max-w-md mx-auto">
             We couldn't locate any transaction entries matching your current search parameters. Try adjusting the query fields.
           </p>
           <Button 
             variant="outline" 
             onClick={handleResetFilters} 
-            className="mt-6 rounded-xl border-slate-800 hover:border-slate-700"
+            className="mt-6 rounded-xl border-[#DCE3F1] dark:border-slate-800 hover:border-[#2447A5]/30 dark:hover:border-slate-700 shadow-sm"
           >
             Clear Search Filters
           </Button>
@@ -254,7 +254,7 @@ const AuditLogs = () => {
       ) : (
         <div className="relative space-y-6">
           {/* Vertical Timeline Rail */}
-          <div className="absolute left-6 md:left-[2.75rem] top-2 bottom-2 w-0.5 bg-slate-800/60" />
+          <div className="absolute left-6 md:left-[2.75rem] top-2 bottom-2 w-0.5 bg-[#DCE3F1] dark:bg-slate-800/60" />
 
           {/* Log Entry Cards */}
           <AnimatePresence mode="popLayout">
@@ -278,7 +278,7 @@ const AuditLogs = () => {
                   </div>
 
                   {/* Glassmorphic Log Card */}
-                  <GlassCard className="p-4 border-slate-800/80 hover:border-slate-700 bg-slate-950/20 backdrop-blur-sm group-hover:bg-slate-950/40 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <GlassCard className="p-4 border-[#DCE3F1] dark:border-slate-800/80 hover:border-[#2447A5]/30 dark:hover:border-slate-700 bg-white dark:bg-slate-950/20 backdrop-blur-sm hover:bg-slate-50 dark:hover:bg-slate-950/40 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
                     
                     {/* Log details */}
                     <div className="space-y-1.5 max-w-2xl">
@@ -289,18 +289,18 @@ const AuditLogs = () => {
                         </span>
                         
                         {/* Operator label */}
-                        <span className="text-xs text-slate-400 font-semibold flex items-center gap-1">
+                        <span className="text-xs text-[#5B6B8A] dark:text-slate-400 font-semibold flex items-center gap-1">
                           <User className="h-3 w-3 text-slate-500" />
                           {log.user ? (
-                            <span>{log.user.name} <span className="text-[10px] text-slate-500 font-medium">({log.user.role})</span></span>
+                            <span>{log.user.name} <span className="text-[10px] text-slate-550 font-medium">({log.user.role})</span></span>
                           ) : (
-                            <span className="text-slate-500">System Task</span>
+                            <span className="text-slate-550">System Task</span>
                           )}
                         </span>
                       </div>
 
                       {/* Details context description */}
-                      <p className="text-sm font-semibold text-slate-300 leading-relaxed">
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-300 leading-relaxed">
                         {log.details}
                       </p>
                     </div>
@@ -330,9 +330,9 @@ const AuditLogs = () => {
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between pt-6 border-t border-slate-800/60 pl-14 md:pl-20">
-              <span className="text-xs text-slate-500 font-semibold">
-                Showing <span className="text-slate-300 font-bold">{logs.length}</span> of <span className="text-slate-300 font-bold">{totalRecords}</span> compliance entries
+            <div className="flex items-center justify-between pt-6 border-t border-[#DCE3F1] dark:border-slate-800/60 pl-14 md:pl-20">
+              <span className="text-xs text-[#5B6B8A] dark:text-slate-550 font-semibold">
+                Showing <span className="text-slate-800 dark:text-slate-300 font-bold">{logs.length}</span> of <span className="text-slate-800 dark:text-slate-300 font-bold">{totalRecords}</span> compliance entries
               </span>
               
               <div className="flex items-center gap-2">
@@ -341,19 +341,19 @@ const AuditLogs = () => {
                   size="sm"
                   onClick={() => setPage(prev => Math.max(prev - 1, 1))}
                   disabled={page === 1}
-                  className="rounded-lg border-slate-800 hover:border-slate-700 cursor-pointer"
+                  className="rounded-lg border-[#DCE3F1] dark:border-slate-800 hover:border-[#2447A5]/30 dark:hover:border-slate-700 cursor-pointer shadow-sm"
                 >
                   <ChevronLeft className="h-4 w-4" /> Previous
                 </Button>
-                <div className="text-xs font-semibold text-slate-400 px-3">
-                  Page <span className="text-white font-bold">{page}</span> of <span className="text-slate-500 font-medium">{totalPages}</span>
+                <div className="text-xs font-semibold text-[#5B6B8A] dark:text-slate-400 px-3">
+                  Page <span className="text-slate-850 dark:text-white font-bold">{page}</span> of <span className="text-slate-500 font-medium">{totalPages}</span>
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
                   disabled={page === totalPages}
-                  className="rounded-lg border-slate-800 hover:border-slate-700 cursor-pointer"
+                  className="rounded-lg border-[#DCE3F1] dark:border-slate-800 hover:border-[#2447A5]/30 dark:hover:border-slate-700 cursor-pointer shadow-sm"
                 >
                   Next <ChevronRight className="h-4 w-4" />
                 </Button>

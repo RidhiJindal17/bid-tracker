@@ -8,6 +8,7 @@ import {
   getDashboardAnalytics,
 } from '../controllers/bidController.js';
 import { protect, checkRole } from '../middleware/authMiddleware.js';
+import { cacheMiddleware } from '../middleware/cacheMiddleware.js';
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ const router = express.Router();
  */
 router.use(protect);
 
-router.get('/analytics/dashboard', getDashboardAnalytics);
+router.get('/analytics/dashboard', cacheMiddleware(300), getDashboardAnalytics);
 
 /**
  * @route   POST /api/bids
@@ -29,7 +30,7 @@ router.get('/analytics/dashboard', getDashboardAnalytics);
  */
 router.route('/')
   .post(checkRole('admin', 'manager', 'sales'), createBid)
-  .get(getBids);
+  .get(cacheMiddleware(30), getBids);
 
 /**
  * @route   GET /api/bids/:id
@@ -45,7 +46,7 @@ router.route('/')
  * @access  Private (Admin or Manager only)
  */
 router.route('/:id')
-  .get(getBidById)
+  .get(cacheMiddleware(30), getBidById)
   .put(updateBid)
   .delete(checkRole('admin', 'manager'), deleteBid);
 

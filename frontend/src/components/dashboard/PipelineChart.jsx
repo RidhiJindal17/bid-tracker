@@ -30,9 +30,9 @@ const PipelineChart = ({ data }) => {
         />
       </div>
 
-      <div className="flex-1 w-full min-h-[220px] relative flex items-center justify-center">
+      <div className="w-full h-[220px] min-h-[220px] relative flex items-center justify-center">
         {mounted ? (
-          <ResponsiveContainer width="99%" height={220}>
+          <ResponsiveContainer width="100%" height={220}>
             <PieChart>
               <Pie
                 data={chartData}
@@ -68,4 +68,4 @@ const PipelineChart = ({ data }) => {
   );
 };
 
-export default PipelineChart;
+export default React.memo(PipelineChart);

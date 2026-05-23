@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { motion } from 'framer-motion';
 import PageTransition from '../../components/ui/PageTransition';
@@ -42,6 +42,7 @@ const Workflow = () => {
   // Board columns data
   const [boardData, setBoardData] = useState({});
   const [dndReady, setDndReady] = useState(false);
+  const [draggedOverColumn, setDraggedOverColumn] = useState(null);
 
   // Defer mounting DND to avoid StrictMode double-rendering crash in React 18/19
   useEffect(() => {
@@ -78,9 +79,17 @@ const Workflow = () => {
   }, [bids]);
 
   /**
+   * Drag Update hook to track active hover columns
+   */
+  const onDragUpdate = (update) => {
+    setDraggedOverColumn(update.destination ? update.destination.droppableId : null);
+  };
+
+  /**
    * Drag End event wrapper with full Optimistic UI Updates
    */
   const onDragEnd = async (result) => {
+    setDraggedOverColumn(null);
     const { source, destination, draggableId } = result;
 
     // 1. Exit if dropped outside columns
@@ -129,36 +138,41 @@ const Workflow = () => {
     <PageTransition className="space-y-8 h-full flex flex-col">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-2">
-          <GitBranch className="h-7 w-7 text-blue-500 animate-pulse" /> Enterprise Kanban Workflow
+        <h1 className="text-3xl font-bold text-[#12213A] dark:text-white tracking-tight flex items-center gap-2">
+          <GitBranch className="h-7 w-7 text-[#2447A5] dark:text-blue-500 animate-pulse" /> Enterprise Kanban Workflow
         </h1>
-        <p className="text-slate-400 text-sm mt-1">
+        <p className="text-[#5B6B8A] dark:text-slate-400 text-sm mt-1">
           Drag and drop bid proposals to advance sales stages. Status changes sync dynamically in the background.
         </p>
       </div>
 
       {loading && Object.keys(boardData).length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center min-h-[450px]">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
-          <p className="text-slate-400 text-xs font-semibold mt-4 tracking-wider uppercase">Initializing Workflow Board...</p>
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#2447A5] dark:border-blue-500 border-t-transparent"></div>
+          <p className="text-[#5B6B8A] dark:text-slate-400 text-xs font-semibold mt-4 tracking-wider uppercase">Initializing Workflow Board...</p>
         </div>
       ) : (
-        <DragDropContext onDragEnd={onDragEnd}>
+        <DragDropContext onDragEnd={onDragEnd} onDragUpdate={onDragUpdate}>
           {/* Scrollable Column Container */}
           <div className="flex-1 overflow-x-auto pb-6 pr-2">
             <div className="flex gap-4 min-w-[1600px] h-[calc(100vh-250px)]">
               {COLUMNS.map((colName) => {
                 const columnCards = boardData[colName] || [];
+                const isGlowing = colName === draggedOverColumn;
 
                 return (
                   <div
                     key={colName}
-                    className="w-80 flex flex-col rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-[#060919]/60 backdrop-blur-xl h-full shadow-md dark:shadow-lg overflow-hidden transition-all duration-300"
+                    className={`w-80 flex flex-col rounded-2xl border backdrop-blur-xl h-full shadow-md dark:shadow-lg overflow-hidden transition-all duration-300 ${
+                      isGlowing 
+                        ? 'border-blue-500/50 dark:border-blue-500/40 shadow-[0_0_25px_rgba(59,130,246,0.15)] bg-blue-500/[0.02]' 
+                        : 'border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-[#060919]/60'
+                    }`}
                   >
                     {/* Column Header */}
-                    <div className={`p-4 border-t-2 ${COLUMN_COLORS[colName]} flex items-center justify-between border-b border-slate-200 dark:border-slate-800/80`}>
+                    <div className={`p-4 border-t-2 ${COLUMN_COLORS[colName]} flex items-center justify-between border-b border-[#DCE3F1] dark:border-slate-800/80`}>
                       <span className="text-xs font-bold text-slate-800 dark:text-white uppercase tracking-wider">{colName}</span>
-                      <span className="rounded-full bg-slate-200/50 dark:bg-slate-900/60 border border-slate-350 dark:border-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-650 dark:text-slate-400">
+                      <span className="rounded-full bg-[#EAF1FF] dark:bg-slate-900/60 border border-[#DCE3F1] dark:border-slate-800 px-2 py-0.5 text-[10px] font-bold text-[#2447A5] dark:text-slate-400">
                         {columnCards.length}
                       </span>
                     </div>
@@ -183,61 +197,66 @@ const Workflow = () => {
                                   style={{
                                     ...provided.draggableProps.style,
                                   }}
-                                  className={`rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#090d1f]/80 p-4 transition-all hover:border-slate-300 dark:hover:border-slate-700/80 cursor-grab active:cursor-grabbing group ${
-                                    PRIORITY_GLOWS[bid.priority] || 'border-l-2 border-l-slate-200 dark:border-l-slate-800'
-                                  } ${snapshot.isDragging ? 'shadow-2xl shadow-blue-500/10 border-blue-500/30 rotate-1 scale-[1.02] bg-slate-50/95 dark:bg-[#0c122b]' : 'shadow-sm dark:shadow-md'}`}
+                                  className="outline-none"
                                 >
-                                  {/* Card Header (Title & Client) */}
-                                  <div className="space-y-1">
-                                    <h4 className="text-xs font-bold text-slate-450 dark:text-slate-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors uppercase tracking-wider">
-                                      {bid.clientName}
-                                    </h4>
-                                    <h3 className="text-sm font-semibold text-slate-800 dark:text-white leading-snug">
-                                      {bid.title}
-                                    </h3>
-                                  </div>
-
-                                  {/* Tags */}
-                                  {bid.tags && bid.tags.length > 0 && (
-                                    <div className="flex flex-wrap gap-1.5 mt-3">
-                                      {bid.tags.slice(0, 2).map((tag) => (
-                                        <span
-                                          key={tag}
-                                          className="inline-flex items-center gap-0.5 rounded-md bg-blue-50 dark:bg-blue-500/5 border border-blue-100 dark:border-blue-500/10 px-2 py-0.5 text-[9px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide"
-                                        >
-                                          <Tag className="h-2 w-2" /> {tag}
-                                        </span>
-                                      ))}
-                                    </div>
-                                  )}
-
-                                  {/* Card Footer Divider */}
-                                  <div className="border-t border-slate-200 dark:border-slate-800/60 my-3.5" />
-
-                                  {/* Info Fields */}
-                                  <div className="flex items-center justify-between">
-                                    {/* Valuation */}
-                                    <div className="flex items-center text-xs font-bold text-slate-800 dark:text-slate-200">
-                                      <DollarSign className="h-3.5 w-3.5 text-slate-500 -mr-0.5" />
-                                      {bid.value.toLocaleString(undefined, { minimumFractionDigits: 0 })}
+                                  <motion.div
+                                    whileHover={{ y: -4, scale: 1.02, transition: { duration: 0.2 } }}
+                                    className={`rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#090d1f]/80 p-4 transition-all hover:border-slate-350 dark:hover:border-slate-700/80 cursor-grab active:cursor-grabbing group ${
+                                      PRIORITY_GLOWS[bid.priority] || 'border-l-2 border-l-slate-200 dark:border-l-slate-800'
+                                    } ${snapshot.isDragging ? 'shadow-2xl shadow-blue-500/10 border-blue-500/35 rotate-1 scale-[1.03] bg-slate-50/95 dark:bg-[#0c122b]' : 'shadow-sm dark:shadow-md'}`}
+                                  >
+                                    {/* Card Header (Title & Client) */}
+                                    <div className="space-y-1">
+                                      <h4 className="text-xs font-bold text-[#5B6B8A] dark:text-slate-500 group-hover:text-[#2447A5] dark:group-hover:text-blue-400 transition-colors uppercase tracking-wider">
+                                        {bid.clientName}
+                                      </h4>
+                                      <h3 className="text-sm font-semibold text-slate-800 dark:text-white leading-snug">
+                                        {bid.title}
+                                      </h3>
                                     </div>
 
-                                    {/* Assignee Avatar */}
-                                    <div className="flex items-center gap-1.5">
-                                      <div className="h-5 w-5 rounded-full bg-slate-105 dark:bg-slate-800 flex items-center justify-center text-[8px] font-bold text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700 uppercase" title={bid.assignedTo?.name}>
-                                        {bid.assignedTo?.name?.charAt(0) || 'U'}
+                                    {/* Tags */}
+                                    {bid.tags && bid.tags.length > 0 && (
+                                      <div className="flex flex-wrap gap-1.5 mt-3">
+                                        {bid.tags.slice(0, 2).map((tag) => (
+                                          <span
+                                            key={tag}
+                                            className="inline-flex items-center gap-0.5 rounded-md bg-blue-50 dark:bg-blue-500/5 border border-blue-100 dark:border-blue-500/10 px-2 py-0.5 text-[9px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide"
+                                          >
+                                            <Tag className="h-2 w-2" /> {tag}
+                                          </span>
+                                        ))}
                                       </div>
-                                      <span className="text-[10px] text-slate-500 font-semibold max-w-[80px] truncate" title={bid.assignedTo?.name}>
-                                        {bid.assignedTo?.name || 'Unassigned'}
-                                      </span>
-                                    </div>
-                                  </div>
+                                    )}
 
-                                  {/* Deadline */}
-                                  <div className="flex items-center gap-1 mt-2 text-[10px] text-slate-400 dark:text-slate-505 font-medium">
-                                    <Calendar className="h-3 w-3" />
-                                    <span>Due {new Date(bid.deadline).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
-                                  </div>
+                                    {/* Card Footer Divider */}
+                                    <div className="border-t border-slate-200 dark:border-slate-800/60 my-3.5" />
+
+                                    {/* Info Fields */}
+                                    <div className="flex items-center justify-between">
+                                      {/* Valuation */}
+                                      <div className="flex items-center text-xs font-bold text-slate-800 dark:text-slate-200">
+                                        <DollarSign className="h-3.5 w-3.5 text-slate-500 -mr-0.5" />
+                                        {bid.value.toLocaleString(undefined, { minimumFractionDigits: 0 })}
+                                      </div>
+
+                                      {/* Assignee Avatar */}
+                                      <div className="flex items-center gap-1.5">
+                                        <div className="h-5 w-5 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[8px] font-bold text-[#5B6B8A] dark:text-slate-400 border border-[#DCE3F1] dark:border-slate-700 uppercase" title={bid.assignedTo?.name}>
+                                          {bid.assignedTo?.name?.charAt(0) || 'U'}
+                                        </div>
+                                        <span className="text-[10px] text-slate-500 font-semibold max-w-[80px] truncate" title={bid.assignedTo?.name}>
+                                          {bid.assignedTo?.name || 'Unassigned'}
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    {/* Deadline */}
+                                    <div className="flex items-center gap-1 mt-2 text-[10px] text-[#5B6B8A] dark:text-slate-500 font-medium">
+                                      <Calendar className="h-3 w-3" />
+                                      <span>Due {new Date(bid.deadline).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+                                    </div>
+                                  </motion.div>
                                 </div>
                               )}
                             </Draggable>

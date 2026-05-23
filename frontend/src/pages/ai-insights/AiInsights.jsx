@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   AreaChart, 
@@ -61,6 +61,7 @@ const AiInsights = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const fetchRiskReport = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
@@ -121,6 +122,7 @@ const AiInsights = () => {
   }, []);
 
   useEffect(() => {
+    setMounted(true);
     fetchRiskReport();
   }, [fetchRiskReport]);
 
@@ -129,28 +131,28 @@ const AiInsights = () => {
     Low: {
       text: 'text-emerald-500 dark:text-emerald-400',
       fill: 'stroke-emerald-500 dark:stroke-emerald-400',
-      bg: 'bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400',
+      bg: 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400',
       glow: 'shadow-emerald-500/20',
       color: '#10b981'
     },
     Medium: {
       text: 'text-amber-500 dark:text-amber-400',
       fill: 'stroke-amber-500 dark:stroke-amber-400',
-      bg: 'bg-amber-500/10 border-amber-200 dark:border-amber-500/20 text-amber-600 dark:text-amber-400',
+      bg: 'bg-amber-50 dark:bg-amber-500/10 border-amber-100 dark:border-amber-500/20 text-amber-700 dark:text-amber-400',
       glow: 'shadow-amber-500/20',
       color: '#f59e0b'
     },
     High: {
       text: 'text-orange-500 dark:text-orange-400',
       fill: 'stroke-orange-500 dark:stroke-orange-400',
-      bg: 'bg-orange-500/10 border-orange-200 dark:border-orange-500/20 text-orange-650 dark:text-orange-400',
+      bg: 'bg-orange-55 dark:bg-orange-500/10 border-orange-100 dark:border-orange-500/20 text-orange-700 dark:text-orange-400',
       glow: 'shadow-orange-500/20',
       color: '#f97316'
     },
     Critical: {
       text: 'text-red-500 dark:text-red-400',
       fill: 'stroke-red-500 dark:stroke-red-400',
-      bg: 'bg-red-500/10 border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400',
+      bg: 'bg-red-50 dark:bg-red-500/10 border-red-100 dark:border-red-500/20 text-red-700 dark:text-red-400',
       glow: 'shadow-red-500/20',
       color: '#ef4444'
     }
@@ -174,8 +176,8 @@ const AiInsights = () => {
               <Sparkles className="h-2 w-2 mr-0.5 inline animate-pulse" /> Active Risk Monitor
             </span>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-800 dark:text-white">AI Portfolio Risk Analysis</h1>
-          <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">Leverage Deep Gemini models to forecast delays, detect bottleneck imbalances, and resolve blockers.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-[#12213A] dark:text-white">AI Portfolio Risk Analysis</h1>
+          <p className="text-[#5B6B8A] dark:text-slate-400 text-xs mt-1">Leverage Deep Gemini models to forecast delays, detect bottleneck imbalances, and resolve blockers.</p>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -190,14 +192,14 @@ const AiInsights = () => {
         </div>
       </div>
 
-      {loading ? (
+      {loading || !mounted ? (
         <RiskSkeleton />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* LEFT COLUMN: Risk score gauge & warning cards */}
           <div className="lg:col-span-5 space-y-6">
             {/* Risk Index Radial Meter */}
-            <GlassCard hoverEffect={false} className="p-6 flex flex-col items-center justify-center relative overflow-hidden border border-slate-250 dark:border-slate-800/85">
+            <GlassCard hoverEffect={false} className="p-6 flex flex-col items-center justify-center relative overflow-hidden border border-[#DCE3F1] dark:border-slate-800/85">
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-500/5 via-transparent to-transparent -z-10" />
               
               <div className="w-full flex items-center justify-between border-b border-slate-200 dark:border-slate-800/60 pb-3 mb-6">
@@ -253,8 +255,8 @@ const AiInsights = () => {
             {/* Warning Cards List */}
             <div className="space-y-4">
               <div className="flex items-center gap-2 px-1">
-                <ShieldAlert className="h-4.5 w-4.5 text-slate-650 dark:text-slate-450" />
-                <h3 className="text-xs font-bold text-slate-800 dark:text-white uppercase tracking-wider">Active Risk Warnings</h3>
+                <ShieldAlert className="h-4.5 w-4.5 text-red-550 dark:text-slate-450" />
+                <h3 className="text-xs font-bold text-slate-850 dark:text-white uppercase tracking-wider">Active Risk Warnings</h3>
               </div>
 
               {data.warnings.length === 0 ? (
@@ -299,8 +301,8 @@ const AiInsights = () => {
                             </div>
                           </div>
 
-                          <div className="border-t border-slate-200 dark:border-slate-800/60 my-2.5" />
-                          <div className="flex items-center justify-between text-[10px] text-slate-450 dark:text-slate-500 font-semibold">
+                          <div className="border-t border-slate-205 dark:border-slate-800/60 my-2.5" />
+                          <div className="flex items-center justify-between text-[10px] text-[#5B6B8A] dark:text-slate-500 font-semibold">
                             <div className="flex items-center gap-1.5">
                               <User className="h-3.5 w-3.5" />
                               <span>Assignee: {warn.assignedTo}</span>
@@ -318,7 +320,7 @@ const AiInsights = () => {
           {/* RIGHT COLUMN: Recharts Trend Chart & Actionable Recommendations */}
           <div className="lg:col-span-7 space-y-6">
             {/* Risk Index Line/Area Trend Chart */}
-            <GlassCard hoverEffect={false} className="p-6 flex flex-col min-h-[300px] border border-slate-250 dark:border-slate-800/85">
+            <GlassCard hoverEffect={false} className="p-6 flex flex-col min-h-[300px] border border-[#DCE3F1] dark:border-slate-800/85">
               <div className="flex items-center justify-between mb-6 pb-2 border-b border-slate-200 dark:border-slate-800/60">
                 <div className="flex items-center gap-2">
                   <Activity className="h-4.5 w-4.5 text-blue-500 dark:text-blue-400" />
@@ -329,8 +331,8 @@ const AiInsights = () => {
                 </div>
               </div>
 
-              <div className="flex-1 w-full min-h-[200px]">
-                <ResponsiveContainer width="100%" height="100%">
+              <div className="w-full h-[240px] min-h-[240px]">
+                <ResponsiveContainer width="100%" height={240}>
                   <AreaChart data={data.trends} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <defs>
                       <linearGradient id="riskGlow" x1="0" y1="0" x2="0" y2="1">
@@ -338,7 +340,7 @@ const AiInsights = () => {
                         <stop offset="95%" stopColor={activeTheme.color} stopOpacity={0}/>
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" opacity={0.2} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-slate-200 dark:text-slate-800" opacity={0.2} />
                     <XAxis 
                       dataKey="month" 
                       stroke="#64748b" 

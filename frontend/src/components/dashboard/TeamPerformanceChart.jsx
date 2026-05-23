@@ -52,9 +52,9 @@ const TeamPerformanceChart = ({ data }) => {
         />
       </div>
 
-      <div className="flex-1 w-full min-h-[280px]">
+      <div className="w-full h-[280px] min-h-[280px]">
         {mounted ? (
-          <ResponsiveContainer width="99%" height={280}>
+          <ResponsiveContainer width="100%" height={280}>
             <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" opacity={0.3} />
               <XAxis 
@@ -103,4 +103,4 @@ const TeamPerformanceChart = ({ data }) => {
   );
 };
 
-export default TeamPerformanceChart;
+export default React.memo(TeamPerformanceChart);

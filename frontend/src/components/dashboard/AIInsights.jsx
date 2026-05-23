@@ -122,40 +122,68 @@ const AIInsights = () => {
     if (!text) return null;
     
     const lines = text.split('\n');
-    return lines.map((line, index) => {
-      // 1. Process Section Headers
-      if (line.startsWith('###') || line.startsWith('####')) {
-        const headerText = line.replace(/^[#\s]+/, '');
-        return (
-          <h4 key={index} className="text-xs font-black text-slate-800 dark:text-white mt-5 mb-2.5 flex items-center gap-2 border-b border-slate-200 dark:border-slate-800/80 pb-1.5 uppercase tracking-wider shrink-0">
-            <span className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse" />
-            {headerText}
-          </h4>
-        );
-      }
-      
-      // 2. Process list items
-      if (line.startsWith('-') || line.startsWith('*')) {
-        const itemText = line.replace(/^[-\*\s]+/, '');
-        return (
-          <div key={index} className="flex items-start gap-2.5 my-1.5 text-xs text-slate-650 dark:text-slate-350 leading-relaxed pl-1">
-            <span className="text-blue-500 dark:text-blue-400 font-bold shrink-0 mt-0.5">•</span>
-            <span>{parseInlineStyles(itemText)}</span>
-          </div>
-        );
-      }
+    return (
+      <motion.div
+        variants={{
+          hidden: { opacity: 0 },
+          show: {
+            opacity: 1,
+            transition: { staggerChildren: 0.06 }
+          }
+        }}
+        initial="hidden"
+        animate="show"
+        className="space-y-1"
+      >
+        {lines.map((line, index) => {
+          let element = null;
+          // 1. Process Section Headers
+          if (line.startsWith('###') || line.startsWith('####')) {
+            const headerText = line.replace(/^[#\s]+/, '');
+            element = (
+              <h4 className="text-xs font-black text-slate-800 dark:text-white mt-5 mb-2.5 flex items-center gap-2 border-b border-slate-200 dark:border-slate-800/80 pb-1.5 uppercase tracking-wider shrink-0">
+                <span className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse" />
+                {headerText}
+              </h4>
+            );
+          }
+          
+          // 2. Process list items
+          else if (line.startsWith('-') || line.startsWith('*')) {
+            const itemText = line.replace(/^[-\*\s]+/, '');
+            element = (
+              <div className="flex items-start gap-2.5 my-1.5 text-xs text-[#5B6B8A] dark:text-slate-350 leading-relaxed pl-1">
+                <span className="text-blue-500 dark:text-blue-400 font-bold shrink-0 mt-0.5">•</span>
+                <span>{parseInlineStyles(itemText)}</span>
+              </div>
+            );
+          }
 
-      // 3. Process normal paragraphs
-      if (line.trim() === '') {
-        return <div key={index} className="h-2" />;
-      }
+          // 3. Process normal paragraphs
+          else if (line.trim() === '') {
+            element = <div className="h-2" />;
+          } else {
+            element = (
+              <p className="text-xs text-[#5B6B8A] dark:text-slate-350 my-2 leading-relaxed">
+                {parseInlineStyles(line)}
+              </p>
+            );
+          }
 
-      return (
-        <p key={index} className="text-xs text-slate-650 dark:text-slate-350 my-2 leading-relaxed">
-          {parseInlineStyles(line)}
-        </p>
-      );
-    });
+          return (
+            <motion.div
+              key={index}
+              variants={{
+                hidden: { opacity: 0, y: 8 },
+                show: { opacity: 1, y: 0, transition: { duration: 0.3 } }
+              }}
+            >
+              {element}
+            </motion.div>
+          );
+        })}
+      </motion.div>
+    );
   };
 
   // Fetch AI project summary report from MERN backend

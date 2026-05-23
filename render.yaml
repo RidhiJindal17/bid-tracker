@@ -1,0 +1,21 @@
+services:
+  # Unified MERN Service hosting backend routes and serving React frontend dist
+  - type: web
+    name: ai-bid-tracker
+    env: node
+    plan: starter
+    buildCommand: npm install && npm run build --prefix frontend && npm install --prefix backend
+    startCommand: npm start --prefix backend
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGO_URI
+        sync: false # Set database connection URL in Render Dashboard
+      - key: JWT_SECRET
+        sync: false # Set secure random string in Render Dashboard
+      - key: GEMINI_API_KEY
+        sync: false # Set generative model key in Render Dashboard
+      - key: CLIENT_URL
+        sync: false # Set client URLs (comma-separated domains) in Render Dashboard

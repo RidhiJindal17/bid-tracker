@@ -12,15 +12,15 @@ import { protect, checkRole } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
+// Secure all AI routes with JWT authentication
+router.use(protect);
+
 /**
  * @route   GET /api/ai/test
  * @desc    Test connection with Gemini 2.5 Flash
- * @access  Public
+ * @access  Private
  */
 router.get('/test', testGeminiAPI);
-
-// Secure subsequent AI generation routes
-router.use(protect);
 
 /**
  * @route   POST /api/ai/generate

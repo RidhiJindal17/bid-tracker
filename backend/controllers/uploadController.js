@@ -2,16 +2,17 @@ import Upload from '../models/Upload.js';
 import fs from 'fs';
 import path from 'path';
 import { logActivity } from '../utils/auditLogger.js';
+import { AppError } from '../middleware/errorMiddleware.js';
 
 /**
  * @desc    Upload a single file
  * @route   POST /api/uploads
  * @access  Private
  */
-export const uploadFile = async (req, res) => {
+export const uploadFile = async (req, res, next) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ message: 'No file was uploaded.' });
+      return next(new AppError('No file was uploaded.', 400));
     }
 
     // Construct the public URL for serving the file
@@ -46,8 +47,7 @@ export const uploadFile = async (req, res) => {
       uploadedAt: newUpload.createdAt,
     });
   } catch (error) {
-    console.error('Upload controller error:', error);
-    res.status(500).json({ message: 'Server error, failed to process file upload.' });
+    next(error);
   }
 };
 
@@ -56,17 +56,17 @@ export const uploadFile = async (req, res) => {
  * @route   DELETE /api/uploads/:id
  * @access  Private
  */
-export const deleteFile = async (req, res) => {
+export const deleteFile = async (req, res, next) => {
   try {
     const fileRecord = await Upload.findById(req.params.id);
 
     if (!fileRecord) {
-      return res.status(404).json({ message: 'File record not found.' });
+      return next(new AppError('File record not found.', 404));
     }
 
     // Authorization check: User can only delete their own uploads
     if (fileRecord.uploadedBy.toString() !== req.user._id.toString()) {
-      return res.status(401).json({ message: 'Not authorized to delete this file.' });
+      return next(new AppError('Not authorized to delete this file.', 401));
     }
 
     // Attempt to delete file from server disk
@@ -98,7 +98,6 @@ export const deleteFile = async (req, res) => {
       id: req.params.id,
     });
   } catch (error) {
-    console.error('Delete upload controller error:', error);
-    res.status(500).json({ message: 'Server error, failed to delete file.' });
+    next(error);
   }
 };

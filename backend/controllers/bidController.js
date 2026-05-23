@@ -1,13 +1,14 @@
 import Bid from '../models/Bid.js';
 import User from '../models/User.js';
 import { logActivity } from '../utils/auditLogger.js';
+import { clearCache } from '../middleware/cacheMiddleware.js';
 
 /**
  * @desc    Create a new bid
  * @route   POST /api/bids
  * @access  Private
  */
-export const createBid = async (req, res) => {
+export const createBid = async (req, res, next) => {
   try {
     const { title, clientName, description, value, status, priority, deadline, assignedTo, tags, attachments } = req.body;
 
@@ -74,9 +75,10 @@ export const createBid = async (req, res) => {
       req,
     });
 
+    clearCache('bids');
     res.status(201).json(bid);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    next(error);
   }
 };
 
@@ -85,7 +87,7 @@ export const createBid = async (req, res) => {
  * @route   GET /api/bids
  * @access  Private
  */
-export const getBids = async (req, res) => {
+export const getBids = async (req, res, next) => {
   try {
     const query = {};
 
@@ -157,7 +159,7 @@ export const getBids = async (req, res) => {
       total,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
@@ -166,7 +168,7 @@ export const getBids = async (req, res) => {
  * @route   GET /api/bids/:id
  * @access  Private
  */
-export const getBidById = async (req, res) => {
+export const getBidById = async (req, res, next) => {
   try {
     const bid = await Bid.findById(req.params.id)
       .populate('assignedTo', 'name email role')
@@ -189,7 +191,7 @@ export const getBidById = async (req, res) => {
 
     res.json(bid);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
@@ -198,7 +200,7 @@ export const getBidById = async (req, res) => {
  * @route   PUT /api/bids/:id
  * @access  Private
  */
-export const updateBid = async (req, res) => {
+export const updateBid = async (req, res, next) => {
   try {
     const bid = await Bid.findById(req.params.id);
 
@@ -327,9 +329,10 @@ export const updateBid = async (req, res) => {
       req,
     });
 
+    clearCache('bids');
     res.json(updatedBid);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    next(error);
   }
 };
 
@@ -338,7 +341,7 @@ export const updateBid = async (req, res) => {
  * @route   DELETE /api/bids/:id
  * @access  Private (Admin Only or creator can be enforced. Enforcing Admin only here for demo)
  */
-export const deleteBid = async (req, res) => {
+export const deleteBid = async (req, res, next) => {
   try {
     const bid = await Bid.findById(req.params.id);
 
@@ -362,9 +365,10 @@ export const deleteBid = async (req, res) => {
       req,
     });
 
+    clearCache('bids');
     res.json({ message: 'Bid removed successfully' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
@@ -373,7 +377,7 @@ export const deleteBid = async (req, res) => {
  * @route   GET /api/bids/analytics/dashboard
  * @access  Private
  */
-export const getDashboardAnalytics = async (req, res) => {
+export const getDashboardAnalytics = async (req, res, next) => {
   try {
     // 1. Calculate General Stats
     const totalBids = await Bid.countDocuments();
@@ -508,6 +512,6 @@ export const getDashboardAnalytics = async (req, res) => {
     });
   } catch (error) {
     console.error('[ANALYTICS ERROR] Dashboard calculations failed:', error);
-    res.status(500).json({ success: false, message: 'Failed to compute dashboard analytics.' });
+    next(error);
   }
 };

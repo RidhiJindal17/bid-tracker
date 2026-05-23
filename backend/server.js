@@ -15,6 +15,7 @@ import notificationRoutes from './routes/notificationRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import auditLogRoutes from './routes/auditLogRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import { errorHandler } from './middleware/errorMiddleware.js';
 
 // Resolve __dirname in ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -22,6 +23,16 @@ const __dirname = path.dirname(__filename);
 
 // Load environment variables
 dotenv.config();
+
+// Validate required environment variables
+const requiredEnv = ['MONGO_URI', 'JWT_SECRET', 'GEMINI_API_KEY'];
+const missingEnv = requiredEnv.filter((v) => !process.env[v]);
+if (missingEnv.length > 0) {
+  console.error(`[CRITICAL CONFIG ERROR] Missing required environment variables: ${missingEnv.join(', ')}`);
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1);
+  }
+}
 
 // Connect to Database
 connectDB();
@@ -81,10 +92,26 @@ app.use('/api/uploads', uploadRoutes);
 app.use('/api/audit-logs', auditLogRoutes);
 app.use('/api/users', userRoutes);
 
-// Root endpoint
-app.get('/', (req, res) => {
-  res.send('API is running...');
-});
+// Centralized error handler
+app.use(errorHandler);
+
+// Serve built static assets in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+  app.get('*', (req, res, next) => {
+    // Let API routes flow to their handlers
+    if (req.originalUrl.startsWith('/api')) {
+      return next();
+    }
+    res.sendFile(path.resolve(__dirname, '..', 'frontend', 'dist', 'index.html'));
+  });
+} else {
+  // Root endpoint
+  app.get('/', (req, res) => {
+    res.send('API is running...');
+  });
+}
 
 // Start Server
 const PORT = process.env.PORT || 5000;

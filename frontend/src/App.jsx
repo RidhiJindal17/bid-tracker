@@ -6,6 +6,8 @@ import { ThemeProvider } from './context/ThemeContext';
 import { NotificationProvider } from './context/NotificationContext';
 import ProtectedRoute from './routes/ProtectedRoute';
 
+import ErrorBoundary from './components/ui/ErrorBoundary';
+
 // Layouts
 import DashboardLayout from './components/layout/DashboardLayout';
 
@@ -59,7 +61,8 @@ const App = () => {
       />
       
       <Suspense fallback={<PageLoader />}>
-        <Routes>
+        <ErrorBoundary>
+          <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
@@ -97,7 +100,8 @@ const App = () => {
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+          </Routes>
+        </ErrorBoundary>
       </Suspense>
         </NotificationProvider>
       </AuthProvider>

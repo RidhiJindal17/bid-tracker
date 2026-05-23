@@ -7,7 +7,7 @@ import { logActivity } from '../utils/auditLogger.js';
  * Generate AI Response from a generic user prompt
  * POST /api/ai/generate
  */
-export const generateResponse = async (req, res) => {
+export const generateResponse = async (req, res, next) => {
   const { prompt } = req.body;
 
   if (!prompt || typeof prompt !== 'string' || prompt.trim() === '') {
@@ -38,11 +38,7 @@ export const generateResponse = async (req, res) => {
       data: responseText
     });
   } catch (error) {
-    console.error('Error inside aiController.generateResponse:', error);
-    return res.status(500).json({
-      success: false,
-      message: error.message || 'An internal error occurred during AI processing.'
-    });
+    next(error);
   }
 };
 
@@ -50,7 +46,7 @@ export const generateResponse = async (req, res) => {
  * Test endpoint to verify the gemini-2.5-flash connection
  * GET /api/ai/test
  */
-export const testGeminiAPI = async (req, res) => {
+export const testGeminiAPI = async (req, res, next) => {
   try {
     const testPrompt = "Summarize an enterprise AI SaaS platform.";
     console.log(`[AI CONTROLLER LOG] Running test endpoint: ${testPrompt}`);
@@ -61,11 +57,7 @@ export const testGeminiAPI = async (req, res) => {
       data: responseText
     });
   } catch (error) {
-    console.error('[AI CONTROLLER ERROR] Test route failure:', error);
-    return res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    next(error);
   }
 };
 
@@ -73,7 +65,7 @@ export const testGeminiAPI = async (req, res) => {
  * Generate a dynamic, database-backed AI project summary and portfolio metrics
  * GET /api/ai/project-summary
  */
-export const getAIProjectSummary = async (req, res) => {
+export const getAIProjectSummary = async (req, res, next) => {
   try {
     const bids = await Bid.find()
       .populate('assignedTo', 'name email')
@@ -206,11 +198,7 @@ ${Object.entries(statusCounts).map(([status, count]) => `  - **${status}**: ${co
       }
     });
   } catch (error) {
-    console.error('Error in getAIProjectSummary:', error);
-    return res.status(500).json({
-      success: false,
-      message: error.message || 'An internal error occurred while generating the AI Project Summary.'
-    });
+    next(error);
   }
 };
 
@@ -218,7 +206,7 @@ ${Object.entries(statusCounts).map(([status, count]) => `  - **${status}**: ${co
  * Test Route: Summarize this project
  * GET or POST /api/ai/summarize-test
  */
-export const testSummarizeProject = async (req, res) => {
+export const testSummarizeProject = async (req, res, next) => {
   const sampleProjectData = {
     title: 'Enterprise AI Procurement & Automation Suite',
     clientName: 'Global Logistics Corp',
@@ -239,11 +227,7 @@ export const testSummarizeProject = async (req, res) => {
       summary: summaryResult
     });
   } catch (error) {
-    console.error('Error inside aiController.testSummarizeProject:', error);
-    return res.status(500).json({
-      success: false,
-      message: error.message || 'Failed to generate test summary.'
-    });
+    next(error);
   }
 };
 
@@ -251,7 +235,7 @@ export const testSummarizeProject = async (req, res) => {
  * Generate deep portfolio risk analysis using real database metrics and Gemini
  * GET /api/ai/risk-analysis
  */
-export const getAIRiskAnalysis = async (req, res) => {
+export const getAIRiskAnalysis = async (req, res, next) => {
   try {
     const bids = await Bid.find().populate('assignedTo', 'name email').lean();
 
@@ -466,11 +450,7 @@ If there are no overdue or urgent projects, set the risk level to "Low" and risk
       data: parsedResult
     });
   } catch (error) {
-    console.error('Error in getAIRiskAnalysis:', error);
-    return res.status(500).json({
-      success: false,
-      message: error.message || 'An internal error occurred while generating the AI Risk Analysis.'
-    });
+    next(error);
   }
 };
 
@@ -478,7 +458,7 @@ If there are no overdue or urgent projects, set the risk level to "Low" and risk
  * Handle real-time AI Chatbot Assistant queries using active database context
  * POST /api/ai/chat
  */
-export const handleAIChat = async (req, res) => {
+export const handleAIChat = async (req, res, next) => {
   const { message } = req.body;
 
   if (!message || typeof message !== 'string' || message.trim() === '') {
@@ -560,11 +540,7 @@ Here is what I evaluated from the active database context for you:
       reply: aiResponseText
     });
   } catch (error) {
-    console.error('Error inside handleAIChat:', error);
-    return res.status(500).json({
-      success: false,
-      message: error.message || 'An internal error occurred during chat assistant processing.'
-    });
+    next(error);
   }
 };
 
@@ -572,7 +548,7 @@ Here is what I evaluated from the active database context for you:
  * Compile dynamic AI smart suggestions and database update payloads based on real pipeline logs
  * GET /api/ai/smart-actions
  */
-export const getSmartActions = async (req, res) => {
+export const getSmartActions = async (req, res, next) => {
   try {
     const bids = await Bid.find().populate('assignedTo', 'name email').lean();
     const users = await User.find({}, 'name').lean();
@@ -709,10 +685,6 @@ export const getSmartActions = async (req, res) => {
       actions: actions.slice(0, 3) // Expose top 3 critical options
     });
   } catch (error) {
-    console.error('Error in getSmartActions:', error);
-    return res.status(500).json({
-      success: false,
-      message: error.message || 'An error occurred while compiling AI Smart Actions.'
-    });
+    next(error);
   }
 };

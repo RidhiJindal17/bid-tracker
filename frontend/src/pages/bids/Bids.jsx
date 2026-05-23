@@ -16,21 +16,21 @@ import {
 } from 'lucide-react';
 
 const STATUS_BADGES = {
-  'New Enquiry': 'bg-sky-500/10 text-sky-400 border-sky-500/20',
-  'Under Review': 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-  'Quotation Sent': 'bg-violet-500/10 text-violet-400 border-violet-500/20',
-  'Negotiation': 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
-  'Approved': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-  'Rejected': 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-  'Order Processing': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  'Completed': 'bg-teal-500/10 text-teal-400 border-teal-500/20',
+  'New Enquiry': 'bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-100 dark:border-sky-500/20',
+  'Under Review': 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-500/20',
+  'Quotation Sent': 'bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-100 dark:border-purple-500/20',
+  'Negotiation': 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border-indigo-100 dark:border-indigo-500/20',
+  'Approved': 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20',
+  'Rejected': 'bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-100 dark:border-rose-500/20',
+  'Order Processing': 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-100 dark:border-blue-500/20',
+  'Completed': 'bg-teal-50 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 border-teal-100 dark:border-teal-500/20',
 };
 
 const PRIORITY_BADGES = {
-  'Low': 'bg-slate-500/10 text-slate-400 border-slate-500/20',
-  'Medium': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  'High': 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-  'Urgent': 'bg-red-500/10 text-red-400 border-red-500/20',
+  'Low': 'bg-slate-55 dark:bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-100 dark:border-slate-500/20',
+  'Medium': 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-100 dark:border-blue-500/20',
+  'High': 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-500/20',
+  'Urgent': 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-100 dark:border-red-500/20',
 };
 
 const Bids = () => {
@@ -104,47 +104,49 @@ const Bids = () => {
     setPage(1);
   }, [debouncedSearch, status, priority, assignedTo, deadlineAfter, deadlineBefore]);
 
-  const handleSort = (field) => {
-    if (sortBy === field) {
-      setOrder(order === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(field);
-      setOrder('desc');
-    }
+  const handleSort = useCallback((field) => {
+    setSortBy((prevSortBy) => {
+      if (prevSortBy === field) {
+        setOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
+      } else {
+        setOrder('desc');
+      }
+      return field;
+    });
     setPage(1);
-  };
+  }, []);
 
-  const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= pagination.pages) {
+  const handlePageChange = useCallback((newPage) => {
+    if (pagination && newPage >= 1 && newPage <= pagination.pages) {
       setPage(newPage);
     }
-  };
+  }, [pagination]);
 
-  const handleRowClick = (bid) => {
+  const handleRowClick = useCallback((bid) => {
     setSelectedBid(bid);
     setIsDrawerOpen(true);
-  };
+  }, []);
 
-  const handleCreateClick = () => {
+  const handleCreateClick = useCallback(() => {
     setSelectedBid(null);
     setIsDrawerOpen(true);
-  };
+  }, []);
 
-  const handleDeleteClick = async (e, id) => {
+  const handleDeleteClick = useCallback(async (e, id) => {
     e.stopPropagation();
     if (window.confirm('Are you sure you want to delete this bid proposal?')) {
       await deleteBid(id);
       loadBidsData();
     }
-  };
+  }, [deleteBid, loadBidsData]);
 
-  const handleEditClick = (e, bid) => {
+  const handleEditClick = useCallback((e, bid) => {
     e.stopPropagation();
     setSelectedBid(bid);
     setIsDrawerOpen(true);
-  };
+  }, []);
 
-  const handleClearAll = () => {
+  const handleClearAll = useCallback(() => {
     setSearch('');
     setDebouncedSearch('');
     setStatus('');
@@ -153,7 +155,7 @@ const Bids = () => {
     setDeadlineAfter('');
     setDeadlineBefore('');
     setPage(1);
-  };
+  }, []);
 
   // Find assignee name matching current assignee ID for filter chips
   const getAssigneeName = () => {
@@ -222,8 +224,8 @@ const Bids = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">Bid Intelligence Hub</h1>
-          <p className="text-slate-400 text-sm mt-1">Monitor, query, and modify active bids and enterprise accounts.</p>
+          <h1 className="text-3xl font-bold text-[#12213A] dark:text-white tracking-tight">Bid Intelligence Hub</h1>
+          <p className="text-[#5B6B8A] dark:text-slate-400 text-sm mt-1">Monitor, query, and modify active bids and enterprise accounts.</p>
         </div>
         <div className="flex items-center gap-3 shrink-0">
           <ExportDropdown 
@@ -246,7 +248,7 @@ const Bids = () => {
       {/* Modern Advanced Floating Filter Panel */}
       <div className="space-y-4">
         {/* Core Quick Bar */}
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between p-4 rounded-2xl border border-slate-800 bg-[#090d1f]/50 backdrop-blur-xl">
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-between p-4 rounded-2xl border border-[#DCE3F1] dark:border-slate-800 bg-white dark:bg-[#090d1f]/50 backdrop-blur-xl shadow-sm">
           <div className="relative w-full md:w-80">
             <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
             <input
@@ -254,7 +256,7 @@ const Bids = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search proposals, clients..."
-              className="w-full rounded-xl border border-slate-800 bg-slate-900/30 py-2.5 pl-10 pr-4 text-sm text-slate-200 outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
+              className="w-full rounded-xl border border-[#DCE3F1] dark:border-slate-800 bg-white dark:bg-slate-900/30 py-2.5 pl-10 pr-4 text-sm text-[#12213A] dark:text-slate-200 outline-none transition-all focus:border-[#2447A5] dark:focus:border-blue-500 focus:ring-2 focus:ring-[#2447A5]/10 dark:focus:ring-blue-500/10 shadow-sm"
             />
           </div>
 
@@ -263,7 +265,7 @@ const Bids = () => {
               variant="outline"
               onClick={() => setShowFilters(!showFilters)}
               className={`rounded-xl px-4 py-2 text-xs flex items-center gap-2 border ${
-                showFilters ? 'bg-slate-800 border-blue-500/40 text-blue-400' : 'border-slate-800 text-slate-300 hover:bg-slate-800'
+                showFilters ? 'bg-[#EAF1FF] dark:bg-slate-800 border-[#2447A5]/40 dark:border-blue-500/40 text-[#2447A5] dark:text-blue-400 font-bold' : 'border-[#DCE3F1] dark:border-slate-800 text-[#5B6B8A] dark:text-slate-300 hover:bg-[#EAF1FF]/40 dark:hover:bg-slate-800'
               }`}
             >
               <SlidersHorizontal className="h-4 w-4" /> {showFilters ? 'Hide Filters' : 'Advanced Filters'}
@@ -281,14 +283,14 @@ const Bids = () => {
               transition={{ duration: 0.25 }}
               className="overflow-hidden"
             >
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-5 rounded-2xl border border-slate-800 bg-[#060919]/40 backdrop-blur-md">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-5 rounded-2xl border border-[#DCE3F1] dark:border-slate-800 bg-white dark:bg-[#060919]/40 backdrop-blur-md shadow-sm">
                 {/* Sales Stage (Status) */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Sales Stage</label>
+                  <label className="text-[10px] font-bold text-[#5B6B8A] dark:text-slate-400 uppercase tracking-wider">Sales Stage</label>
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
-                    className="w-full rounded-xl border border-slate-800 bg-slate-900/40 py-2 px-3 text-xs text-slate-300 outline-none focus:border-blue-500"
+                    className="w-full rounded-xl border border-[#DCE3F1] dark:border-slate-800 bg-white dark:bg-slate-900/40 py-2 px-3 text-xs text-slate-700 dark:text-slate-300 outline-none focus:border-[#2447A5] dark:focus:border-blue-500 shadow-sm"
                   >
                     <option value="">All Stages</option>
                     {Object.keys(STATUS_BADGES).map(key => (
@@ -299,11 +301,11 @@ const Bids = () => {
 
                 {/* Priority */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Priority Level</label>
+                  <label className="text-[10px] font-bold text-[#5B6B8A] dark:text-slate-400 uppercase tracking-wider">Priority Level</label>
                   <select
                     value={priority}
                     onChange={(e) => setPriority(e.target.value)}
-                    className="w-full rounded-xl border border-slate-800 bg-slate-900/40 py-2 px-3 text-xs text-slate-300 outline-none focus:border-blue-500"
+                    className="w-full rounded-xl border border-[#DCE3F1] dark:border-slate-800 bg-white dark:bg-slate-900/40 py-2 px-3 text-xs text-slate-700 dark:text-slate-300 outline-none focus:border-[#2447A5] dark:focus:border-blue-500 shadow-sm"
                   >
                     <option value="">All Priorities</option>
                     {Object.keys(PRIORITY_BADGES).map(key => (
@@ -314,11 +316,11 @@ const Bids = () => {
 
                 {/* Assignee */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Assigned Team Member</label>
+                  <label className="text-[10px] font-bold text-[#5B6B8A] dark:text-slate-400 uppercase tracking-wider">Assigned Team Member</label>
                   <select
                     value={assignedTo}
                     onChange={(e) => setAssignedTo(e.target.value)}
-                    className="w-full rounded-xl border border-slate-800 bg-slate-900/40 py-2 px-3 text-xs text-slate-300 outline-none focus:border-blue-500"
+                    className="w-full rounded-xl border border-[#DCE3F1] dark:border-slate-800 bg-white dark:bg-slate-900/40 py-2 px-3 text-xs text-slate-700 dark:text-slate-300 outline-none focus:border-[#2447A5] dark:focus:border-blue-500 shadow-sm"
                   >
                     <option value="">All Owners</option>
                     {teamMembers.map(member => (
@@ -329,20 +331,20 @@ const Bids = () => {
 
                 {/* Deadlines Range */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Deadline Range</label>
+                  <label className="text-[10px] font-bold text-[#5B6B8A] dark:text-slate-400 uppercase tracking-wider">Deadline Range</label>
                   <div className="flex gap-2 items-center">
                     <input
                       type="date"
                       value={deadlineAfter}
                       onChange={(e) => setDeadlineAfter(e.target.value)}
-                      className="w-full rounded-xl border border-slate-800 bg-slate-900/40 py-1.5 px-2 text-[10px] text-slate-300 outline-none [color-scheme:dark]"
+                      className="w-full rounded-xl border border-[#DCE3F1] dark:border-slate-800 bg-white dark:bg-slate-900/40 py-1.5 px-2 text-[10px] text-slate-700 dark:text-slate-300 outline-none dark:[color-scheme:dark] shadow-sm"
                     />
-                    <span className="text-slate-600 text-xs">-</span>
+                    <span className="text-slate-400 text-xs">-</span>
                     <input
                       type="date"
                       value={deadlineBefore}
                       onChange={(e) => setDeadlineBefore(e.target.value)}
-                      className="w-full rounded-xl border border-slate-800 bg-slate-900/40 py-1.5 px-2 text-[10px] text-slate-300 outline-none [color-scheme:dark]"
+                      className="w-full rounded-xl border border-[#DCE3F1] dark:border-slate-800 bg-white dark:bg-slate-900/40 py-1.5 px-2 text-[10px] text-slate-700 dark:text-slate-300 outline-none dark:[color-scheme:dark] shadow-sm"
                     />
                   </div>
                 </div>
@@ -353,49 +355,49 @@ const Bids = () => {
 
         {/* Dynamic dismissible Chips row */}
         {hasActiveFilters && (
-          <div className="flex flex-wrap gap-2 items-center bg-[#090d1f]/10 p-2 rounded-xl border border-slate-900">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider ml-1">Active Parameters:</span>
+          <div className="flex flex-wrap gap-2 items-center bg-[#EAF1FF]/20 dark:bg-[#090d1f]/10 p-2 rounded-xl border border-[#DCE3F1] dark:border-slate-900">
+            <span className="text-[10px] font-bold text-[#5B6B8A] dark:text-slate-500 uppercase tracking-wider ml-1">Active Parameters:</span>
             
             {search.trim() !== '' && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 border border-blue-500/20 px-2.5 py-0.5 text-xs text-blue-400 font-medium">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[#EAF1FF] dark:bg-blue-500/10 border border-[#DCE3F1] dark:border-blue-500/20 px-2.5 py-0.5 text-xs text-[#2447A5] dark:text-blue-400 font-semibold">
                 Search: "{search}"
-                <button onClick={() => setSearch('')} className="hover:text-red-400 transition-colors"><X className="h-3 w-3" /></button>
+                <button onClick={() => setSearch('')} className="hover:text-red-500 transition-colors"><X className="h-3 w-3" /></button>
               </span>
             )}
             {status !== '' && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 border border-blue-500/20 px-2.5 py-0.5 text-xs text-blue-400 font-medium">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[#EAF1FF] dark:bg-blue-500/10 border border-[#DCE3F1] dark:border-blue-500/20 px-2.5 py-0.5 text-xs text-[#2447A5] dark:text-blue-400 font-semibold">
                 Stage: {status}
-                <button onClick={() => setStatus('')} className="hover:text-red-400 transition-colors"><X className="h-3 w-3" /></button>
+                <button onClick={() => setStatus('')} className="hover:text-red-500 transition-colors"><X className="h-3 w-3" /></button>
               </span>
             )}
             {priority !== '' && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 border border-blue-500/20 px-2.5 py-0.5 text-xs text-blue-400 font-medium">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[#EAF1FF] dark:bg-blue-500/10 border border-[#DCE3F1] dark:border-blue-500/20 px-2.5 py-0.5 text-xs text-[#2447A5] dark:text-blue-400 font-semibold">
                 Priority: {priority}
-                <button onClick={() => setPriority('')} className="hover:text-red-400 transition-colors"><X className="h-3 w-3" /></button>
+                <button onClick={() => setPriority('')} className="hover:text-red-500 transition-colors"><X className="h-3 w-3" /></button>
               </span>
             )}
             {assignedTo !== '' && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 border border-blue-500/20 px-2.5 py-0.5 text-xs text-blue-400 font-medium">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[#EAF1FF] dark:bg-blue-500/10 border border-[#DCE3F1] dark:border-blue-500/20 px-2.5 py-0.5 text-xs text-[#2447A5] dark:text-blue-400 font-semibold">
                 Owner: {getAssigneeName()}
-                <button onClick={() => setAssignedTo('')} className="hover:text-red-400 transition-colors"><X className="h-3 w-3" /></button>
+                <button onClick={() => setAssignedTo('')} className="hover:text-red-500 transition-colors"><X className="h-3 w-3" /></button>
               </span>
             )}
             {deadlineAfter !== '' && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 border border-blue-500/20 px-2.5 py-0.5 text-xs text-blue-400 font-medium">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[#EAF1FF] dark:bg-blue-500/10 border border-[#DCE3F1] dark:border-blue-500/20 px-2.5 py-0.5 text-xs text-[#2447A5] dark:text-blue-400 font-semibold">
                 After: {deadlineAfter}
-                <button onClick={() => setDeadlineAfter('')} className="hover:text-red-400 transition-colors"><X className="h-3 w-3" /></button>
+                <button onClick={() => setDeadlineAfter('')} className="hover:text-red-500 transition-colors"><X className="h-3 w-3" /></button>
               </span>
             )}
             {deadlineBefore !== '' && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 border border-blue-500/20 px-2.5 py-0.5 text-xs text-blue-400 font-medium">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[#EAF1FF] dark:bg-blue-500/10 border border-[#DCE3F1] dark:border-blue-500/20 px-2.5 py-0.5 text-xs text-[#2447A5] dark:text-blue-400 font-semibold">
                 Before: {deadlineBefore}
-                <button onClick={() => setDeadlineBefore('')} className="hover:text-red-400 transition-colors"><X className="h-3 w-3" /></button>
+                <button onClick={() => setDeadlineBefore('')} className="hover:text-red-500 transition-colors"><X className="h-3 w-3" /></button>
               </span>
             )}
 
             <button
               onClick={handleClearAll}
-              className="text-[10px] font-bold text-red-400 hover:text-red-300 uppercase tracking-wider ml-auto px-2 py-1 rounded hover:bg-red-500/5 transition-colors"
+              className="text-[10px] font-bold text-red-500 hover:text-red-400 uppercase tracking-wider ml-auto px-2 py-1 rounded hover:bg-red-500/5 transition-colors"
             >
               Clear all parameters
             </button>
@@ -405,12 +407,12 @@ const Bids = () => {
 
       {/* Main Table / Grid Container */}
       {!loading && bids.length === 0 ? (
-        <Card className="min-h-[420px] flex flex-col items-center justify-center text-center border-dashed border-slate-800 bg-[#090d1f]/20 p-8 rounded-3xl">
-          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-500/10 to-violet-500/10 flex items-center justify-center border border-blue-500/20 mb-6 shadow-xl shadow-blue-500/5">
-            <Briefcase className="h-8 w-8 text-blue-400" />
+        <Card className="min-h-[420px] flex flex-col items-center justify-center text-center border-dashed border-[#DCE3F1] dark:border-slate-800 bg-white dark:bg-[#090d1f]/20 p-8 rounded-3xl shadow-sm">
+          <div className="h-16 w-16 rounded-2xl bg-[#EAF1FF] dark:bg-gradient-to-br dark:from-blue-500/10 dark:to-violet-500/10 flex items-center justify-center border border-[#DCE3F1] dark:border-blue-500/20 mb-6 shadow-sm">
+            <Briefcase className="h-8 w-8 text-[#2447A5] dark:text-blue-400" />
           </div>
-          <h3 className="text-xl font-bold text-white">No active proposals found</h3>
-          <p className="text-slate-500 max-w-sm text-sm mt-2 mb-6">Create a bid proposal to get started with predictive AI valuations and client pipeline tracking.</p>
+          <h3 className="text-xl font-bold text-[#12213A] dark:text-white">No active proposals found</h3>
+          <p className="text-[#5B6B8A] dark:text-slate-500 max-w-sm text-sm mt-2 mb-6">Create a bid proposal to get started with predictive AI valuations and client pipeline tracking.</p>
           <Button onClick={handleCreateClick}>
             <Plus className="mr-2 h-4 w-4" /> Create Your First Bid
           </Button>
@@ -429,9 +431,9 @@ const Bids = () => {
 
           {/* Pagination Controls */}
           {pagination.pages > 1 && (
-            <div className="flex items-center justify-between border-t border-slate-800/60 pt-6">
-              <span className="text-xs text-slate-500">
-                Showing page <strong className="text-slate-300">{pagination.page}</strong> of <strong className="text-slate-300">{pagination.pages}</strong> ({pagination.total} total bids)
+            <div className="flex items-center justify-between border-t border-[#DCE3F1] dark:border-slate-800/60 pt-6">
+              <span className="text-xs text-[#5B6B8A] dark:text-slate-500">
+                Showing page <strong className="text-slate-800 dark:text-slate-300">{pagination.page}</strong> of <strong className="text-slate-800 dark:text-slate-300">{pagination.pages}</strong> ({pagination.total} total bids)
               </span>
               <div className="flex gap-2">
                 <Button

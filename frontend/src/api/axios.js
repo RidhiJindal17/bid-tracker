@@ -1,14 +1,16 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
+// 1. Centralized instance configuration
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api'),
+  timeout: 20000, // 20-second request timeout limit
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Add a request interceptor to include JWT token
+// 2. Request interceptor to append JWT credentials
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -22,27 +24,46 @@ api.interceptors.request.use(
   }
 );
 
-// Add a response interceptor to handle errors
+// 3. Response interceptor with automatic retry, token expiration check, and error mapping
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    const status = error.response?.status;
-    const message = error.response?.data?.message || 'Access denied or session expired.';
+  async (error) => {
+    const { config, response } = error;
+
+    // Retry settings for network failures or 5xx server exceptions
+    if (config && !config._isRetryAttempt) {
+      config._retryCount = config._retryCount || 0;
+      const maxRetries = 3;
+
+      const isNetworkError = !response;
+      const isServerError = response && response.status >= 500;
+
+      if ((isNetworkError || isServerError) && config._retryCount < maxRetries) {
+        config._retryCount += 1;
+        config._isRetryAttempt = config._retryCount >= maxRetries;
+        
+        // Exponential backoff delays: 1s, 2s, 4s
+        const backoffDelay = Math.pow(2, config._retryCount) * 500;
+        await new Promise((resolve) => setTimeout(resolve, backoffDelay));
+        return api(config);
+      }
+    }
+
+    const status = response?.status;
+    const message = response?.data?.message || 'Access denied or session expired.';
 
     if (status === 401) {
-      // Handle unauthorized error (e.g., redirect to login or clear storage)
+      // Clear local state storage on expired or invalid tokens
       localStorage.clear();
       if (!window.location.pathname.includes('/login')) {
-        window.location.href = '/login';
-        // Return an unresolved promise to pause execution during redirection,
-        // which completely silences "Uncaught (in promise)" console errors.
+        window.location.href = '/login?expired=true';
+        // Return an unresolved promise to pause execution during redirection
         return new Promise(() => {});
       }
     } else if (status === 403) {
-      // Handle forbidden error gracefully
       toast.error(message);
 
-      // Detect role mismatch or stale session (e.g. client role says admin/manager but got 403)
+      // Handle role synchronization discrepancies
       const storedUser = localStorage.getItem('user');
       if (storedUser) {
         try {
@@ -50,18 +71,18 @@ api.interceptors.response.use(
           const role = (parsedUser.role || parsedUser.user?.role || '').toLowerCase();
           
           if (['admin', 'manager'].includes(role)) {
-            // Role mismatch detected. Clear storage and force fresh login.
             localStorage.clear();
             setTimeout(() => {
               window.location.href = '/login?message=role_mismatch';
             }, 1500);
             return new Promise(() => {});
           }
-        } catch (e) {
-          // ignore parsing error
+        } catch {
+          // Ignore parsing issues
         }
       }
     }
+
     return Promise.reject(error);
   }
 );

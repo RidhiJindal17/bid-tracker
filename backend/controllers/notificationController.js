@@ -1,19 +1,19 @@
 import Notification from '../models/Notification.js';
+import { AppError } from '../middleware/errorMiddleware.js';
 
 /**
  * @desc    Get all notifications for logged-in user
  * @route   GET /api/notifications
  * @access  Private
  */
-export const getNotifications = async (req, res) => {
+export const getNotifications = async (req, res, next) => {
   try {
     const notifications = await Notification.find({ user: req.user._id })
       .sort({ createdAt: -1 });
 
     res.status(200).json(notifications);
   } catch (error) {
-    console.error('Error fetching notifications:', error);
-    res.status(500).json({ message: 'Server error, failed to retrieve notifications' });
+    next(error);
   }
 };
 
@@ -22,17 +22,17 @@ export const getNotifications = async (req, res) => {
  * @route   PUT /api/notifications/read/:id
  * @access  Private
  */
-export const markAsRead = async (req, res) => {
+export const markAsRead = async (req, res, next) => {
   try {
     const notification = await Notification.findById(req.params.id);
 
     if (!notification) {
-      return res.status(404).json({ message: 'Notification not found' });
+      return next(new AppError('Notification not found', 404));
     }
 
     // Check ownership
     if (notification.user.toString() !== req.user._id.toString()) {
-      return res.status(401).json({ message: 'Not authorized' });
+      return next(new AppError('Not authorized to access this notification', 401));
     }
 
     notification.isRead = true;
@@ -40,8 +40,7 @@ export const markAsRead = async (req, res) => {
 
     res.status(200).json(notification);
   } catch (error) {
-    console.error('Error marking notification as read:', error);
-    res.status(500).json({ message: 'Server error, failed to mark notification as read' });
+    next(error);
   }
 };
 
@@ -50,7 +49,7 @@ export const markAsRead = async (req, res) => {
  * @route   PUT /api/notifications/read-all
  * @access  Private
  */
-export const markAllAsRead = async (req, res) => {
+export const markAllAsRead = async (req, res, next) => {
   try {
     await Notification.updateMany(
       { user: req.user._id, isRead: false },
@@ -59,8 +58,7 @@ export const markAllAsRead = async (req, res) => {
 
     res.status(200).json({ message: 'All notifications marked as read' });
   } catch (error) {
-    console.error('Error marking all notifications as read:', error);
-    res.status(500).json({ message: 'Server error, failed to mark all notifications as read' });
+    next(error);
   }
 };
 
@@ -69,25 +67,24 @@ export const markAllAsRead = async (req, res) => {
  * @route   DELETE /api/notifications/:id
  * @access  Private
  */
-export const deleteNotification = async (req, res) => {
+export const deleteNotification = async (req, res, next) => {
   try {
     const notification = await Notification.findById(req.params.id);
 
     if (!notification) {
-      return res.status(404).json({ message: 'Notification not found' });
+      return next(new AppError('Notification not found', 404));
     }
 
     // Check ownership
     if (notification.user.toString() !== req.user._id.toString()) {
-      return res.status(401).json({ message: 'Not authorized' });
+      return next(new AppError('Not authorized to delete this notification', 401));
     }
 
     await notification.deleteOne();
 
     res.status(200).json({ message: 'Notification removed successfully', id: req.params.id });
   } catch (error) {
-    console.error('Error deleting notification:', error);
-    res.status(500).json({ message: 'Server error, failed to delete notification' });
+    next(error);
   }
 };
 
@@ -96,7 +93,7 @@ export const deleteNotification = async (req, res) => {
  * @route   POST /api/notifications/mock
  * @access  Private
  */
-export const createMockNotification = async (req, res) => {
+export const createMockNotification = async (req, res, next) => {
   try {
     const { title, message, type } = req.body;
     
@@ -110,7 +107,6 @@ export const createMockNotification = async (req, res) => {
 
     res.status(201).json(notification);
   } catch (error) {
-    console.error('Error creating mock notification:', error);
-    res.status(500).json({ message: 'Server error, failed to create mock notification' });
+    next(error);
   }
 };
