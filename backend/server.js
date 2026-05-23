@@ -92,14 +92,11 @@ app.use('/api/uploads', uploadRoutes);
 app.use('/api/audit-logs', auditLogRoutes);
 app.use('/api/users', userRoutes);
 
-// Centralized error handler
-app.use(errorHandler);
-
 // Serve built static assets in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
-  app.get('*', (req, res, next) => {
+  app.use((req, res, next) => {
     // Let API routes flow to their handlers
     if (req.originalUrl.startsWith('/api')) {
       return next();
@@ -112,6 +109,17 @@ if (process.env.NODE_ENV === 'production') {
     res.send('API is running...');
   });
 }
+
+// Fallback 404 handler for unmatched routes
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Route not found'
+  });
+});
+
+// Centralized error handler
+app.use(errorHandler);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
