@@ -97,9 +97,10 @@ app.use('/api/users', userRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
-  res.json({
+  res.status(200).json({
     success: true,
-    message: 'BidSphere AI Backend Running'
+    message: 'BidSphere AI Backend Running',
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
