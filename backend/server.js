@@ -6,8 +6,10 @@ import { fileURLToPath } from 'url';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
+
 import { mongoSanitizeExpress5 } from './middleware/sanitizeMiddleware.js';
 import connectDB from './config/db.js';
+
 import authRoutes from './routes/authRoutes.js';
 import bidRoutes from './routes/bidRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
@@ -15,6 +17,7 @@ import notificationRoutes from './routes/notificationRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import auditLogRoutes from './routes/auditLogRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+
 import { errorHandler } from './middleware/errorMiddleware.js';
 
 // Resolve __dirname in ES Modules
@@ -26,106 +29,209 @@ dotenv.config();
 
 // Validate required environment variables
 const requiredEnv = ['MONGO_URI', 'JWT_SECRET', 'GEMINI_API_KEY'];
-const missingEnv = requiredEnv.filter((v) => !process.env[v]);
+
+const missingEnv = requiredEnv.filter(
+  (v) => !process.env[v]
+);
+
 if (missingEnv.length > 0) {
-  console.error(`[CRITICAL CONFIG ERROR] Missing required environment variables: ${missingEnv.join(', ')}`);
+  console.error(
+    `[CRITICAL CONFIG ERROR] Missing required environment variables: ${missingEnv.join(', ')}`
+  );
+
   if (process.env.NODE_ENV === 'production') {
     process.exit(1);
   }
 }
 
-// Connect to Database
+// Connect Database
 connectDB();
 
 const app = express();
 
-// Trust Railway proxy for secure headers and correct client IP resolution in rate limiting
+// ===============================
+// TRUST PROXY (IMPORTANT FOR RAILWAY)
+// ===============================
 app.set('trust proxy', 1);
 
-/**
- * Global Optimization & Security Middleware
- */
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" } // Allows secure cross-origin asset loading
-}));
-app.use(mongoSanitizeExpress5); // Prevent NoSQL Injection attacks (Express 5 compatible)
-app.use(compression()); // Gzip compression for smaller payload footprints
+// ===============================
+// SECURITY + PERFORMANCE
+// ===============================
+app.use(
+  helmet({
+    crossOriginResourcePolicy: {
+      policy: 'cross-origin',
+    },
+  })
+);
 
-const allowedOrigins = process.env.CLIENT_URL 
-  ? process.env.CLIENT_URL.split(',').map(url => url.trim()) 
-  : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:5000'];
+app.use(mongoSanitizeExpress5);
+
+app.use(compression());
+
+// ===============================
+// CORS CONFIGURATION
+// ===============================
+const allowedOrigins = process.env.CLIENT_URL
+  ? process.env.CLIENT_URL.split(',').map((url) =>
+      url.trim()
+    )
+  : [
+      'http://localhost:5173',
+      'http://localhost:3000',
+    ];
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, curl, or Postman)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
+    // Allow Postman / Mobile Apps / Curl
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    if (
+      allowedOrigins.includes(origin) ||
+      allowedOrigins.includes('*')
+    ) {
       callback(null, true);
     } else {
-      callback(new Error(`Origin ${origin} not allowed by CORS`));
+      callback(
+        new Error(
+          `CORS blocked for origin: ${origin}`
+        )
+      );
     }
   },
+
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
 };
-app.use(cors(corsOptions)); // Enable secure Cross-Origin Resource Sharing
-app.use(express.json()); // Body parser for JSON data
 
+app.use(cors(corsOptions));
+
+// ===============================
+// BODY PARSER
+// ===============================
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// ===============================
+// RATE LIMITER
+// ===============================
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // Limit each IP to 200 requests per window
+  windowMs: 15 * 60 * 1000,
+
+  max: 200,
+
   standardHeaders: true,
+
   legacyHeaders: false,
-  message: { message: 'Too many requests from this IP, please try again later.' }
+
+  message: {
+    success: false,
+    message:
+      'Too many requests from this IP. Please try again later.',
+  },
 });
-app.use('/api', apiLimiter); // Apply rate limiter to all API endpoints
 
-// Serve uploaded files statically
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/api', apiLimiter);
 
-/**
- * Routes
- */
+// ===============================
+// STATIC UPLOADS
+// ===============================
+app.use(
+  '/uploads',
+  express.static(
+    path.join(__dirname, 'uploads')
+  )
+);
+
+// ===============================
+// API ROUTES
+// ===============================
 app.use('/api/auth', authRoutes);
+
 app.use('/api/bids', bidRoutes);
+
 app.use('/api/ai', aiRoutes);
-app.use('/api/notifications', notificationRoutes);
+
+app.use(
+  '/api/notifications',
+  notificationRoutes
+);
+
 app.use('/api/uploads', uploadRoutes);
-app.use('/api/audit-logs', auditLogRoutes);
+
+app.use(
+  '/api/audit-logs',
+  auditLogRoutes
+);
+
 app.use('/api/users', userRoutes);
 
-// Root endpoint
+// ===============================
+// ROOT HEALTH ROUTE
+// ===============================
 app.get('/', (req, res) => {
   res.status(200).json({
     success: true,
-    message: 'BidSphere AI Backend Running',
-    environment: process.env.NODE_ENV || 'development'
+    message:
+      'BidSphere AI Backend Running Successfully',
+    environment:
+      process.env.NODE_ENV ||
+      'development',
   });
 });
 
-// Fallback 404 handler for unmatched routes
+// ===============================
+// 404 HANDLER
+// ===============================
 app.use((req, res) => {
   res.status(404).json({
     success: false,
-    message: 'Route not found'
+    message: 'Route not found',
   });
 });
 
-// Centralized error handler
+// ===============================
+// GLOBAL ERROR HANDLER
+// ===============================
 app.use(errorHandler);
 
-// Start Server
+// ===============================
+// START SERVER
+// ===============================
 const PORT = process.env.PORT || 5000;
+
 const server = app.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+  console.log(
+    `Server running in ${
+      process.env.NODE_ENV || 'development'
+    } mode on port ${PORT}`
+  );
 });
 
-// Production process crash safeguards
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('[CRITICAL SYSTEM WARNING] Unhandled Promise Rejection at:', promise, 'reason:', reason);
-});
+// ===============================
+// HANDLE UNHANDLED PROMISES
+// ===============================
+process.on(
+  'unhandledRejection',
+  (reason, promise) => {
+    console.error(
+      '[CRITICAL SYSTEM WARNING] Unhandled Promise Rejection:',
+      reason
+    );
+  }
+);
 
-process.on('uncaughtException', (error) => {
-  console.error('[CRITICAL SYSTEM WARNING] Uncaught Exception thrown:', error);
-});
+// ===============================
+// HANDLE UNCAUGHT EXCEPTIONS
+// ===============================
+process.on(
+  'uncaughtException',
+  (error) => {
+    console.error(
+      '[CRITICAL SYSTEM WARNING] Uncaught Exception:',
+      error
+    );
+  }
+);
